@@ -1,4 +1,4 @@
-# Startup Finder Project Requirements
+# Venture-Watch Project Requirements
 
 ## Project Overview
 The Startup Finder is a comprehensive tool designed to identify recently funded startups that might be looking to expand their teams or hire interns. The system collects data from various sources, processes it, and presents it in an intuitive dashboard, allowing users to discover potential job opportunities with promising startups.
@@ -56,10 +56,6 @@ The Startup Finder is a comprehensive tool designed to identify recently funded 
   - Export capabilities
   - Notification system
 
-### 6. Deployment
-- GitHub repository with complete source code and documentation
-- Vercel deployment configuration
-- Shareable on LinkedIn with professional presentation
 
 ## Technical Requirements
 
@@ -82,9 +78,8 @@ The Startup Finder is a comprehensive tool designed to identify recently funded 
 - Safe handling of API keys and credentials
 - Compliance with website terms of service for scraping
 - Ethical data collection practices
-- User data protection
 
-## Future Enhancements (Optional)
+## Future Enhancements(optional)
 - Email notification system for new opportunities
 - Integration with job application tracking
 - AI-powered matching of skills to startup needs
