@@ -1,0 +1,279 @@
+{
+  "timestamp": "2025-05-23T01:40:46.032418",
+  "count": 17,
+  "startups": [
+    {
+      "company_name": "Together AI",
+      "description": "AI applications pioneer",
+      "funding_amount": "$305M",
+      "funding_round": "Not specified",
+      "funding_date": "2025-02-01",
+      "investors": [
+        "Not specified"
+      ],
+      "industry": "Artificial Intelligence",
+      "location": "US",
+      "company_size": "Not available",
+      "company_website": "Not available",
+      "source": "Perplexity Sonar API"
+    },
+    {
+      "company_name": "Harvey",
+      "description": "AI applications pioneer",
+      "funding_amount": "$300M",
+      "funding_round": "Not specified",
+      "funding_date": "2025-02-01",
+      "investors": [
+        "Not specified"
+      ],
+      "industry": "Artificial Intelligence",
+      "location": "US",
+      "company_size": "Not available",
+      "company_website": "Not available",
+      "source": "Perplexity Sonar API"
+    },
+    {
+      "company_name": "Abridge",
+      "description": "AI applications pioneer",
+      "funding_amount": "$250M",
+      "funding_round": "Not specified",
+      "funding_date": "2025-02-01",
+      "investors": [
+        "Not specified"
+      ],
+      "industry": "Artificial Intelligence",
+      "location": "US",
+      "company_size": "Not available",
+      "company_website": "Not available",
+      "source": "Perplexity Sonar API"
+    },
+    {
+      "company_name": "Airwallex",
+      "description": "Fintech company",
+      "funding_amount": "$300M",
+      "funding_round": "Series F",
+      "funding_date": "2025-05-21",
+      "investors": [
+        "Square Peg",
+        "DST Global",
+        "Lone Pine Capital",
+        "Airtree",
+        "Salesforce Ventures",
+        "Hostplus",
+        "NGS Super",
+        "Blackbird"
+      ],
+      "industry": "Fintech",
+      "location": "Not specified",
+      "company_size": "Not available",
+      "company_website": "Not available",
+      "source": "Perplexity Sonar API"
+    },
+    {
+      "company_name": "Crusoe Energy Systems",
+      "description": "Energy systems company",
+      "funding_amount": "$11.6B",
+      "funding_round": "Debt and equity financing",
+      "funding_date": "2025-05-21",
+      "investors": [
+        "Blue Owl Capital",
+        "Oracle",
+        "SoftBank"
+      ],
+      "industry": "Energy",
+      "location": "Not specified",
+      "company_size": "Not available",
+      "company_website": "Not available",
+      "source": "Perplexity Sonar API"
+    },
+    {
+      "company_name": "Zoca",
+      "description": "Tech startup",
+      "funding_amount": "$6M",
+      "funding_round": "Not specified",
+      "funding_date": "2025-05-21",
+      "investors": [
+        "Accel",
+        "GTMfund",
+        "Elevation Capital",
+        "Better Capital"
+      ],
+      "industry": "Technology",
+      "location": "Not specified",
+      "company_size": "Not available",
+      "company_website": "Not available",
+      "source": "Perplexity Sonar API"
+    },
+    {
+      "company_name": "Converge",
+      "description": "Sustainable technology company",
+      "funding_amount": "€19.4M",
+      "funding_round": "Not specified",
+      "funding_date": "2025-05-21",
+      "investors": [
+        "ABN AMRO Sustainable Impact Fund",
+        "Climate Investment",
+        "TO Ventures",
+        "Force Over Mass Capital",
+        "Move Energy",
+        "Pi Impact",
+        "J-Impact"
+      ],
+      "industry": "Sustainability/CleanTech",
+      "location": "Not specified",
+      "company_size": "Not available",
+      "company_website": "Not available",
+      "source": "Perplexity Sonar API"
+    },
+    {
+      "company_name": "Mythik",
+      "description": "Tech startup",
+      "funding_amount": "$15M",
+      "funding_round": "Seed",
+      "funding_date": "2025-05-21",
+      "investors": [
+        "Not specified"
+      ],
+      "industry": "Technology",
+      "location": "Not specified",
+      "company_size": "Not available",
+      "company_website": "Not available",
+      "source": "Perplexity Sonar API"
+    },
+    {
+      "company_name": "DataHub",
+      "description": "AI reliability company",
+      "funding_amount": "$35M",
+      "funding_round": "Series B",
+      "funding_date": "2025-05-21",
+      "investors": [
+        "Bessemer Venture Partners"
+      ],
+      "industry": "Artificial Intelligence",
+      "location": "Not specified",
+      "company_size": "Not available",
+      "company_website": "Not available",
+      "source": "Perplexity Sonar API"
+    },
+    {
+      "company_name": "Nomagic",
+      "description": "Tech startup",
+      "funding_amount": "€42M",
+      "funding_round": "Series B",
+      "funding_date": "2025-02-01",
+      "investors": [
+        "Not specified"
+      ],
+      "industry": "Technology",
+      "location": "CEE region",
+      "company_size": "Not available",
+      "company_website": "Not available",
+      "source": "Perplexity Sonar API"
+    },
+    {
+      "company_name": "Atrandi Biosciences",
+      "description": "Biosciences company",
+      "funding_amount": "€24M",
+      "funding_round": "Series A",
+      "funding_date": "2025-02-01",
+      "investors": [
+        "Not specified"
+      ],
+      "industry": "Biotech",
+      "location": "CEE region",
+      "company_size": "Not available",
+      "company_website": "Not available",
+      "source": "Perplexity Sonar API"
+    },
+    {
+      "company_name": "Bible Chat",
+      "description": "Tech startup",
+      "funding_amount": "€13.4M",
+      "funding_round": "Series A",
+      "funding_date": "2025-02-01",
+      "investors": [
+        "Not specified"
+      ],
+      "industry": "Technology",
+      "location": "CEE region",
+      "company_size": "Not available",
+      "company_website": "Not available",
+      "source": "Perplexity Sonar API"
+    },
+    {
+      "company_name": "Perceive Pharma",
+      "description": "Biotech startup developing small-molecule treatments for eye diseases",
+      "funding_amount": "$15M",
+      "funding_round": "Series A",
+      "funding_date": "2025-02-01",
+      "investors": [
+        "Undisclosed"
+      ],
+      "industry": "Biotech",
+      "location": "Not specified",
+      "company_size": "Not available",
+      "company_website": "Not available",
+      "source": "Perplexity Sonar API"
+    },
+    {
+      "company_name": "Lumotive",
+      "description": "Optical semiconductor startup developing programmable optical chips",
+      "funding_amount": "$45M",
+      "funding_round": "Series B",
+      "funding_date": "2025-02-01",
+      "investors": [
+        "Undisclosed"
+      ],
+      "industry": "Semiconductor/Technology",
+      "location": "Not specified",
+      "company_size": "Not available",
+      "company_website": "Not available",
+      "source": "Perplexity Sonar API"
+    },
+    {
+      "company_name": "Terra CO2",
+      "description": "Green tech startup producing sustainable alternatives to traditional cement and concrete",
+      "funding_amount": "$82M",
+      "funding_round": "Series B",
+      "funding_date": "2025-02-01",
+      "investors": [
+        "Undisclosed"
+      ],
+      "industry": "CleanTech/Construction",
+      "location": "Not specified",
+      "company_size": "Not available",
+      "company_website": "Not available",
+      "source": "Perplexity Sonar API"
+    },
+    {
+      "company_name": "Augury",
+      "description": "Industrial AI startup for predictive maintenance and process optimization",
+      "funding_amount": "$75M",
+      "funding_round": "Not specified",
+      "funding_date": "2025-02-01",
+      "investors": [
+        "Lightrock"
+      ],
+      "industry": "Industrial AI",
+      "location": "Not specified",
+      "company_size": "Not available",
+      "company_website": "Not available",
+      "source": "Perplexity Sonar API"
+    },
+    {
+      "company_name": "Lambda Labs",
+      "description": "AI company",
+      "funding_amount": "$480M",
+      "funding_round": "Series D",
+      "funding_date": "2025-02-01",
+      "investors": [
+        "Not specified"
+      ],
+      "industry": "Artificial Intelligence",
+      "location": "Not specified",
+      "company_size": "Not available",
+      "company_website": "Not available",
+      "source": "Perplexity Sonar API"
+    }
+  ]
+}

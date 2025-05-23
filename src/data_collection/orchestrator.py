@@ -59,7 +59,7 @@ class DataCollectionOrchestrator:
         funding_rounds: Optional[List[str]] = None,
         use_browser: bool = True,
         **kwargs
-    ) -> List[StartupData]:
+    ) -> List[Dict[str, Any]]:
         """
         Collect startup data from all registered sources.
         
@@ -72,7 +72,7 @@ class DataCollectionOrchestrator:
             **kwargs: Additional parameters passed to collectors
             
         Returns:
-            Combined list of StartupData objects from all sources
+            Combined list of startup dictionaries from all sources
         """
         all_startups = []
         
@@ -89,15 +89,24 @@ class DataCollectionOrchestrator:
                         funding_rounds=funding_rounds,
                         **kwargs
                     )
+                    # Ensure startups are in dictionary format
+                    if startups and not isinstance(startups[0], dict):
+                        startups = [s if isinstance(s, dict) else s.__dict__ for s in startups]
                 elif isinstance(collector, WebScrapingCollector):
                     startups = collector.collect(
                         months_back=months_back,
                         use_browser=use_browser,
                         **kwargs
                     )
+                    # Convert to dict if needed
+                    if startups and not isinstance(startups[0], dict):
+                        startups = [s if isinstance(s, dict) else s.__dict__ for s in startups]
                 else:
                     # Generic collector
                     startups = collector.collect(**kwargs)
+                    # Convert to dict if needed
+                    if startups and not isinstance(startups[0], dict):
+                        startups = [s if isinstance(s, dict) else s.__dict__ for s in startups]
                 
                 logger.info(f"Collected {len(startups)} startups from {name}")
                 all_startups.extend(startups)
@@ -130,72 +139,37 @@ class DataCollectionOrchestrator:
             logger.error(f"Error collecting from {source_name}: {e}")
             return []
     
-    def deduplicate_startups(self, startups: List[StartupData]) -> List[StartupData]:
-        """
-        Remove duplicate startup entries based on name similarity.
-        
-        Args:
-            startups: List of StartupData objects
-            
-        Returns:
-            Deduplicated list of StartupData objects
-        """
-        if not startups:
-            return []
-            
-        # Simple deduplication based on exact name match
-        # In a production system, this would use more sophisticated fuzzy matching
-        unique_startups = {}
+    def deduplicate_startups(self, startups: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Remove duplicate startups based on company name."""
+        seen = {}
+        unique_startups = []
         
         for startup in startups:
-            # Normalize name for comparison
-            normalized_name = startup.name.lower().strip()
-            
-            if normalized_name in unique_startups:
-                # If we already have this startup, merge any missing information
-                existing = unique_startups[normalized_name]
+            # Use dictionary access and handle potential missing keys
+            normalized_name = startup.get('name', '').lower().strip()
+            if not normalized_name:
+                continue
                 
-                # Always prefer non-None values from the newer record
-                # This ensures we get the most up-to-date information
-                if startup.funding_amount:
-                    existing.funding_amount = startup.funding_amount
-                    
-                if startup.funding_round:
-                    existing.funding_round = startup.funding_round
-                    
-                if startup.funding_date:
-                    existing.funding_date = startup.funding_date
-                    
-                if startup.investors:
-                    existing.investors = startup.investors
-                    
-                if startup.industry:
-                    existing.industry = startup.industry
-                    
-                if startup.location:
-                    existing.location = startup.location
-                    
-                if startup.company_size:
-                    existing.company_size = startup.company_size
-                    
-                if startup.company_url:
-                    existing.company_url = startup.company_url
-                    
-                if startup.linkedin_url:
-                    existing.linkedin_url = startup.linkedin_url
-                    
-                if startup.key_people:
-                    existing.key_people = startup.key_people
-                    
-                # Update the source to indicate multiple sources
-                if existing.source != startup.source:
-                    existing.source = f"{existing.source}, {startup.source}"
-                    
-                # Keep the most recent updated_at timestamp
-                if startup.updated_at > existing.updated_at:
-                    existing.updated_at = startup.updated_at
+            if normalized_name not in seen:
+                seen[normalized_name] = startup
+                unique_startups.append(startup)
             else:
-                # New unique startup
-                unique_startups[normalized_name] = startup
-                
-        return list(unique_startups.values())
+                # If we have a duplicate, keep the one with more complete information
+                existing = seen[normalized_name]
+                if self._is_more_complete(startup, existing):
+                    seen[normalized_name] = startup
+                    # Replace in unique_startups
+                    idx = unique_startups.index(existing)
+                    unique_startups[idx] = startup
+        
+        return unique_startups
+
+    def _is_more_complete(self, startup1: Dict[str, Any], startup2: Dict[str, Any]) -> bool:
+        """Compare two startup dictionaries to determine which has more complete information."""
+        fields_to_check = ['description', 'funding_amount', 'funding_round', 'funding_date', 
+                          'investors', 'industry', 'location', 'company_size', 'company_website']
+        
+        score1 = sum(1 for field in fields_to_check if startup1.get(field))
+        score2 = sum(1 for field in fields_to_check if startup2.get(field))
+        
+        return score1 > score2

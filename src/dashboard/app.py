@@ -33,6 +33,27 @@ def main():
 
     db_manager = get_database_manager()
 
+    # Load startup data from JSON file
+    def load_startup_data():
+        try:
+            with open("startup_data.json", "r") as f:
+                data = json.load(f)
+                df = pd.DataFrame(data)
+
+                # Check if 'funding_date' column exists
+                if 'funding_date' in df.columns:
+                    df['funding_date'] = pd.to_datetime(df['funding_date'], errors='coerce')
+                else:
+                    df['funding_date'] = None  # Or create an empty column
+
+                return df
+        except FileNotFoundError:
+            st.error("Startup data file not found. Please collect data first.")
+            return pd.DataFrame()
+        except Exception as e:
+            st.error(f"Error loading startup data: {e}")
+            return pd.DataFrame()
+
     # custom CSS
     st.markdown("""
     <style>
@@ -267,339 +288,192 @@ def main():
                         # deduplicate
                         startups = orchestrator.deduplicate_startups(startups)
                         
-                        # save to database
-                        db_manager.save_startup_data(startups)
-                        
-                        st.success(f"Successfully collected {len(startups)} startups!")
+                        # If using Perplexity, store in session and display directly
+                        if use_perplexity:
+                            st.session_state['perplexity_startups'] = startups
+                            st.success(f"Successfully collected {len(startups)} startups from Perplexity API!")
+                        else:
+                            db_manager.save_startup_data(startups)
+                            st.success(f"Successfully collected {len(startups)} startups!")
 
     # main content
     st.markdown("<div class='main-header'>🚀 Venture-Watch</div>", unsafe_allow_html=True)
     st.markdown("Discover recently funded startups that might be looking to expand their teams.")
 
-    # get filtered startups
-    startups = db_manager.get_startups(
+    # Initialize session state if needed
+    if 'current_startups' not in st.session_state:
+        # Try loading from the JSON file first
+        try:
+            with open("startup_funding_data.json", "r", encoding='utf-8') as f:
+                data = json.load(f)
+                st.session_state['current_startups'] = data.get("startups", [])
+                st.session_state['show_cached'] = True
+        except (FileNotFoundError, json.JSONDecodeError):
+            st.session_state['current_startups'] = []
+            st.session_state['show_cached'] = False
+
+    # Load historical data from database
+    existing_startups = db_manager.get_startups(
         months_back=months_back,
         industries=selected_industries if selected_industries else None,
         locations=selected_locations if selected_locations else None,
         funding_rounds=selected_funding_rounds if selected_funding_rounds else None,
-        limit=1000  # High limit for analytics
+        limit=1000
     )
+    
+    # Convert existing startups to list of dicts if any found
+    if existing_startups:
+        historical_data = [s.__dict__ for s in existing_startups]
+        # Merge with current startups if any
+        if 'current_startups' in st.session_state:
+            # Use a set to track unique names
+            seen_names = set()
+            merged_startups = []
+            
+            # Add current startups first
+            for startup in st.session_state['current_startups']:
+                name = startup.get('name') or startup.get('company_name')
+                if name and name not in seen_names:
+                    seen_names.add(name)
+                    merged_startups.append(startup)
+            
+            # Add historical startups if not already present
+            for startup in historical_data:
+                name = startup.get('name') or startup.get('company_name')
+                if name and name not in seen_names:
+                    seen_names.add(name)
+                    merged_startups.append(startup)
+            
+            st.session_state['current_startups'] = merged_startups
 
-    # convert to DataFrame for easier manipulation
-    if startups:
-        df = pd.DataFrame(startups)
+    # Display data section
+    if st.session_state.get('current_startups'):
+        display_data = st.session_state['current_startups']
         
-        # convert funding_date to datetime
-        df['funding_date'] = pd.to_datetime(df['funding_date'])
+        # Debug information
+        st.sidebar.info(f"Number of startups in memory: {len(display_data)}")
         
-        # dashboard metrics
-        col1, col2, col3, col4 = st.columns(4)
+        # Create DataFrame for display
+        df_data = []
+        for startup in display_data:
+            # Normalize the data structure
+            company_data = {
+                "Company": startup.get('name') or startup.get('company_name', 'N/A'),
+                "Industry": startup.get('industry', 'N/A'),
+                "Location": startup.get('location', 'N/A'),
+                "Funding Amount": startup.get('funding_amount', 'N/A'),
+                "Round": startup.get('funding_round', 'N/A'),
+                "Description": startup.get('description', 'N/A'),
+                "Funding Date": startup.get('funding_date'),
+                "Website": startup.get('company_website') or startup.get('company_url', 'N/A'),
+                "Investors": ", ".join(startup.get('investors', [])[:2]) + ("..." if len(startup.get('investors', [])) > 2 else "")
+            }
+            df_data.append(company_data)
         
-        with col1:
-            st.markdown("<div class='card'>", unsafe_allow_html=True)
-            st.markdown(f"<div class='metric-value'>{len(df)}</div>", unsafe_allow_html=True)
-            st.markdown("<div class='metric-label'>Startups Found</div>", unsafe_allow_html=True)
-            st.markdown("</div>", unsafe_allow_html=True)
-            
-        with col2:
-            unique_industries = df['industry'].dropna().nunique()
-            st.markdown("<div class='card'>", unsafe_allow_html=True)
-            st.markdown(f"<div class='metric-value'>{unique_industries}</div>", unsafe_allow_html=True)
-            st.markdown("<div class='metric-label'>Industries</div>", unsafe_allow_html=True)
-            st.markdown("</div>", unsafe_allow_html=True)
-            
-        with col3:
-            unique_locations = df['location'].dropna().nunique()
-            st.markdown("<div class='card'>", unsafe_allow_html=True)
-            st.markdown(f"<div class='metric-value'>{unique_locations}</div>", unsafe_allow_html=True)
-            st.markdown("<div class='metric-label'>Locations</div>", unsafe_allow_html=True)
-            st.markdown("</div>", unsafe_allow_html=True)
-            
-        with col4:
-            latest_funding = df['funding_date'].max()
-            days_ago = (datetime.now() - latest_funding).days if not pd.isna(latest_funding) else "N/A"
-            st.markdown("<div class='card'>", unsafe_allow_html=True)
-            st.markdown(f"<div class='metric-value'>{days_ago if days_ago != 'N/A' else 'N/A'}</div>", unsafe_allow_html=True)
-            st.markdown("<div class='metric-label'>Days Since Latest Funding</div>", unsafe_allow_html=True)
-            st.markdown("</div>", unsafe_allow_html=True)
+        df = pd.DataFrame(df_data)
         
-        # tabs for different views
-        tab1, tab2, tab3 = st.tabs(["Analytics", "Startup List", "Company Profiles"])
+        # Display all three tabs
+        tab1, tab2, tab3 = st.tabs(["📊 Analytics", "📋 Startup List", "👥 Company Profiles"])
         
         with tab1:
             st.markdown("<div class='sub-header'>Funding Analytics</div>", unsafe_allow_html=True)
             
-            # row 1: time series and industry breakdown
             col1, col2 = st.columns(2)
             
             with col1:
-                # time series of funding events
-                if not df['funding_date'].isna().all():
-                    # group by month and count
-                    df_time = df.copy()
-                    df_time['month'] = df_time['funding_date'].dt.strftime('%Y-%m')
-                    monthly_counts = df_time.groupby('month').size().reset_index(name='count')
-                    
-                    fig = px.line(
-                        monthly_counts, 
-                        x='month', 
-                        y='count',
-                        title='Funding Events Over Time',
-                        labels={'month': 'Month', 'count': 'Number of Startups'},
-                        markers=True
-                    )
-                    fig.update_layout(
-                        xaxis_title='Month',
-                        yaxis_title='Number of Startups',
-                        height=400
-                    )
-                    st.plotly_chart(fig, use_container_width=True)
-                else:
-                    st.info("No time data available for visualization.")
+                # Industry distribution
+                if 'Industry' in df.columns:
+                    industry_counts = df['Industry'].value_counts()
+                    st.subheader("Top Industries")
+                    st.bar_chart(industry_counts)
             
             with col2:
-                # industry breakdown
-                if 'industry' in df.columns and not df['industry'].isna().all():
-                    industry_counts = df['industry'].value_counts().reset_index()
-                    industry_counts.columns = ['industry', 'count']
-                    industry_counts = industry_counts.sort_values('count', ascending=True).tail(10)
-                    
-                    fig = px.bar(
-                        industry_counts,
-                        y='industry',
-                        x='count',
-                        title='Top Industries',
-                        labels={'industry': 'Industry', 'count': 'Number of Startups'},
-                        orientation='h'
-                    )
-                    fig.update_layout(
-                        xaxis_title='Number of Startups',
-                        yaxis_title='Industry',
-                        height=400
-                    )
-                    st.plotly_chart(fig, use_container_width=True)
-                else:
-                    st.info("No industry data available for visualization.")
-            
-            # row 2: location and funding round breakdown
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                # Location breakdown
-                if 'location' in df.columns and not df['location'].isna().all():
-                    location_counts = df['location'].value_counts().reset_index()
-                    location_counts.columns = ['location', 'count']
-                    location_counts = location_counts.sort_values('count', ascending=True).tail(10)
-                    
-                    fig = px.bar(
-                        location_counts,
-                        y='location',
-                        x='count',
-                        title='Top Locations',
-                        labels={'location': 'Location', 'count': 'Number of Startups'},
-                        orientation='h'
-                    )
-                    fig.update_layout(
-                        xaxis_title='Number of Startups',
-                        yaxis_title='Location',
-                        height=400
-                    )
-                    st.plotly_chart(fig, use_container_width=True)
-                else:
-                    st.info("No location data available for visualization.")
-            
-            with col2:
-                # funding round breakdown
-                if 'funding_round' in df.columns and not df['funding_round'].isna().all():
-                    round_counts = df['funding_round'].value_counts().reset_index()
-                    round_counts.columns = ['funding_round', 'count']
-                    
-                    fig = px.pie(
-                        round_counts,
-                        values='count',
-                        names='funding_round',
-                        title='Funding Rounds Distribution',
-                        hole=0.4
-                    )
-                    fig.update_layout(height=400)
-                    st.plotly_chart(fig, use_container_width=True)
-                else:
-                    st.info("No funding round data available for visualization.")
+                # Funding rounds distribution
+                if 'Round' in df.columns:
+                    round_counts = df['Round'].value_counts()
+                    st.subheader("Funding Rounds")
+                    st.bar_chart(round_counts)
         
         with tab2:
-            st.markdown("<div class='sub-header'>Startup List</div>", unsafe_allow_html=True)
+            # Add search and filter options
+            search = st.text_input("🔍 Search startups by name, industry, or location")
             
-            # search box
-            search_query = st.text_input("Search startups by name, description, or industry")
-            
-            # filter by search query if provided
             filtered_df = df
-            if search_query:
-                search_query = search_query.lower()
+            if search:
+                search = search.lower()
                 filtered_df = df[
-                    df['name'].str.lower().str.contains(search_query, na=False) |
-                    df['description'].str.lower().str.contains(search_query, na=False) |
-                    df['industry'].str.lower().str.contains(search_query, na=False)
+                    df['Company'].str.lower().str.contains(search, na=False) |
+                    df['Industry'].str.lower().str.contains(search, na=False) |
+                    df['Location'].str.lower().str.contains(search, na=False)
                 ]
             
-            # sort options
-            sort_options = {
-                "Most Recent Funding": "funding_date",
-                "Company Name (A-Z)": "name",
-                "Industry (A-Z)": "industry"
-            }
-            sort_by = st.selectbox("Sort by", options=list(sort_options.keys()))
-            sort_column = sort_options[sort_by]
+            st.markdown("<div class='sub-header'>Startup List</div>", unsafe_allow_html=True)
+            st.info(f"Showing {len(filtered_df)} startups")
             
-            # sort the dataframe
-            if sort_column == "funding_date":
-                filtered_df = filtered_df.sort_values(sort_column, ascending=False)
-            else:
-                filtered_df = filtered_df.sort_values(sort_column)
-            
-            # display startups
-            if len(filtered_df) > 0:
-                for _, row in filtered_df.iterrows():
+            # Display startups in cards
+            for _, row in filtered_df.iterrows():
+                with st.container():
                     st.markdown("<div class='company-card'>", unsafe_allow_html=True)
-                    
-                    # company name and funding
                     col1, col2 = st.columns([3, 1])
+                    
                     with col1:
-                        st.markdown(f"<div class='company-name'>{row['name']}</div>", unsafe_allow_html=True)
+                        st.markdown(f"<div class='company-name'>{row['Company']}</div>", unsafe_allow_html=True)
                     with col2:
-                        if row['funding_amount']:
-                            st.markdown(f"<div class='company-funding'>{row['funding_amount']}</div>", unsafe_allow_html=True)
+                        if row['Funding Amount'] != 'N/A':
+                            st.markdown(f"<div class='company-funding'>{row['Funding Amount']}</div>", unsafe_allow_html=True)
                     
-                    # company details
-                    if row['description']:
-                        st.markdown(f"<div class='company-detail'>{row['description'][:200]}{'...' if len(row['description']) > 200 else ''}</div>", unsafe_allow_html=True)
+                    if row['Description'] != 'N/A':
+                        st.markdown(f"<div class='company-detail'>{row['Description'][:200]}...</div>", unsafe_allow_html=True)
                     
-                    # metadata row
                     col1, col2, col3 = st.columns(3)
                     with col1:
-                        if row['industry']:
-                            st.markdown(f"<div class='company-detail'><strong>Industry:</strong> {row['industry']}</div>", unsafe_allow_html=True)
+                        st.markdown(f"<div class='company-detail'><strong>Industry:</strong> {row['Industry']}</div>", unsafe_allow_html=True)
                     with col2:
-                        if row['location']:
-                            st.markdown(f"<div class='company-detail'><strong>Location:</strong> {row['location']}</div>", unsafe_allow_html=True)
+                        st.markdown(f"<div class='company-detail'><strong>Location:</strong> {row['Location']}</div>", unsafe_allow_html=True)
                     with col3:
-                        if row['funding_round']:
-                            st.markdown(f"<div class='company-detail'><strong>Round:</strong> {row['funding_round']}</div>", unsafe_allow_html=True)
+                        st.markdown(f"<div class='company-detail'><strong>Round:</strong> {row['Round']}</div>", unsafe_allow_html=True)
                     
-                    # funding date and links
-                    col1, col2 = st.columns([1, 1])
+                    col1, col2 = st.columns(2)
                     with col1:
-                        if not pd.isna(row['funding_date']):
-                            funding_date = row['funding_date'].strftime('%Y-%m-%d')
-                            st.markdown(f"<div class='company-detail'><strong>Funding Date:</strong> {funding_date}</div>", unsafe_allow_html=True)
+                        if row['Investors'] != 'N/A':
+                            st.markdown(f"<div class='company-detail'><strong>Investors:</strong> {row['Investors']}</div>", unsafe_allow_html=True)
                     with col2:
-                        links = []
-                        if row['company_url']:
-                            links.append(f"<a href='{row['company_url']}' target='_blank'>Website</a>")
-                        if row['linkedin_url']:
-                            links.append(f"<a href='{row['linkedin_url']}' target='_blank'>LinkedIn</a>")
-                        if row['source_url']:
-                            links.append(f"<a href='{row['source_url']}' target='_blank'>Source</a>")
-                        
-                        if links:
-                            st.markdown(f"<div class='company-detail'><strong>Links:</strong> {' | '.join(links)}</div>", unsafe_allow_html=True)
-                    
-                    # view details button
-                    if st.button(f"View Details", key=f"view_{row['id']}"):
-                        st.session_state.selected_startup = row['id']
-                        st.experimental_rerun()
+                        if row['Website'] != 'N/A':
+                            st.markdown(f"<div class='company-detail'><strong>Website:</strong> <a href='{row['Website']}' target='_blank'>Visit</a></div>", unsafe_allow_html=True)
                     
                     st.markdown("</div>", unsafe_allow_html=True)
-            else:
-                st.info("No startups found matching your criteria.")
         
         with tab3:
             st.markdown("<div class='sub-header'>Company Profiles</div>", unsafe_allow_html=True)
             
-            # check if a startup is selected
-            if hasattr(st.session_state, 'selected_startup'):
-                startup_id = st.session_state.selected_startup
-                startup = db_manager.get_startup_by_id(startup_id)
+            # Add company selector
+            selected_company = st.selectbox("Select a company to view detailed profile", df['Company'].tolist())
+            
+            if selected_company:
+                company_data = df[df['Company'] == selected_company].iloc[0]
                 
-                if startup:
-                    # company header
-                    st.markdown(f"<div class='main-header'>{startup['name']}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='main-header'>{selected_company}</div>", unsafe_allow_html=True)
+                
+                col1, col2 = st.columns([2, 1])
+                
+                with col1:
+                    st.markdown("### About")
+                    st.write(company_data['Description'])
                     
-                    # company details
-                    col1, col2 = st.columns([2, 1])
-                    
-                    with col1:
-                        st.markdown("### About")
-                        st.write(startup['description'])
-                        
-                        st.markdown("### Funding Details")
-                        funding_details = []
-                        if startup['funding_amount']:
-                            funding_details.append(f"**Amount:** {startup['funding_amount']}")
-                        if startup['funding_round']:
-                            funding_details.append(f"**Round:** {startup['funding_round']}")
-                        if startup['funding_date']:
-                            funding_date = datetime.fromisoformat(startup['funding_date']).strftime('%Y-%m-%d')
-                            funding_details.append(f"**Date:** {funding_date}")
-                        
-                        if funding_details:
-                            st.markdown(" | ".join(funding_details))
-                        
-                        if startup['investors'] and len(startup['investors']) > 0:
-                            st.markdown("### Investors")
-                            st.write(", ".join(startup['investors']))
-                    
-                    with col2:
-                        st.markdown("### Company Information")
-                        if startup['industry']:
-                            st.markdown(f"**Industry:** {startup['industry']}")
-                        if startup['location']:
-                            st.markdown(f"**Location:** {startup['location']}")
-                        if startup['company_size']:
-                            st.markdown(f"**Company Size:** {startup['company_size']}")
-                        
-                        st.markdown("### Links")
-                        if startup['company_url']:
-                            st.markdown(f"[Company Website]({startup['company_url']})")
-                        if startup['linkedin_url']:
-                            st.markdown(f"[LinkedIn]({startup['linkedin_url']})")
-                        if startup['source_url']:
-                            st.markdown(f"[Funding Source]({startup['source_url']})")
-                    
-                    # key people section
-                    if startup['key_people'] and len(startup['key_people']) > 0:
-                        st.markdown("### Key People")
-                        
-                        for person in startup['key_people']:
-                            col1, col2, col3 = st.columns([2, 2, 1])
-                            with col1:
-                                st.write(f"**{person['name']}**")
-                            with col2:
-                                if person['title']:
-                                    st.write(person['title'])
-                            with col3:
-                                links = []
-                                if person['linkedin_url']:
-                                    links.append(f"[LinkedIn]({person['linkedin_url']})")
-                                if person['email']:
-                                    links.append(f"[Email](mailto:{person['email']})")
-                                
-                                if links:
-                                    st.markdown(" | ".join(links))
-                    
-                    # back button
-                    if st.button("Back to List"):
-                        del st.session_state.selected_startup
-                        st.experimental_rerun()
-                else:
-                    st.error("Startup not found.")
-                    if st.button("Back to List"):
-                        del st.session_state.selected_startup
-                        st.experimental_rerun()
-            else:
-                st.info("Select a startup from the list to view detailed profile.")
+                    st.markdown("### Funding Details")
+                    st.write(f"**Amount:** {company_data['Funding Amount']}")
+                    st.write(f"**Round:** {company_data['Round']}")
+                    if company_data['Investors'] != 'N/A':
+                        st.write(f"**Investors:** {company_data['Investors']}")
+                
+                with col2:
+                    st.markdown("### Company Information")
+                    st.write(f"**Industry:** {company_data['Industry']}")
+                    st.write(f"**Location:** {company_data['Location']}")
+                    if company_data['Website'] != 'N/A':
+                        st.write(f"**Website:** [{company_data['Website']}]({company_data['Website']})")
     else:
-        st.info("No startups found in the database. Use the sidebar to collect data.")
+        st.info("No startups found. Use the sidebar to collect data.")
 
     # footer
     st.markdown("<div class='footer'>Venture-Watch - Find your next opportunity</div>", unsafe_allow_html=True)
