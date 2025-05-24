@@ -95,73 +95,38 @@ def main():
         .company-card {
             padding: 1rem;
             border-radius: 0.5rem;
-            background-color: white;
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-            margin-bottom: 1rem;
+            background-color: #1E1E1E;
+            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.2);
+            margin-bottom: 0.5rem;  /* Reduced margin between cards */
             border-left: 4px solid #1E88E5;
         }
-        .company-name {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #1E88E5;
-            margin-bottom: 0.5rem;
+        .card-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1rem;
+            align-items: start;
         }
-        .company-detail {
-            margin-bottom: 0.25rem;
-            color: #616161;
+        .right-aligned {
+            text-align: right;
+            justify-self: end;
         }
-        .company-funding {
-            font-weight: 600;
-            color: #43a047;
+        .metadata-grid {
+            display: grid;
+            grid-template-columns: auto auto auto;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
         }
-        .filter-section {
-            margin-bottom: 1rem;
+        /* Remove white space between expanders */
+        .streamlit-expanderHeader {
+            margin-top: 0 !important;
+            margin-bottom: 0 !important;
         }
-        /* Custom dark theme for Streamlit widgets */
-        .stTextInput > div > div > input,
-        .stTextArea textarea,
-        .stNumberInput input,
-        .stMultiSelect > div > div > div,
-        .stSelectbox > div > div > div,
-        select,
-        input[type="text"],
-        input[type="number"],
-        textarea {
-            background-color: #23232b !important;
-            color: #f1f1f1 !important;
-            border: 1px solid #444 !important;
-            caret-color: #1E88E5 !important;
+        .streamlit-expanderContent {
+            border-bottom: none !important;
         }
-        .stTextInput > div > div > input::placeholder,
-        .stTextArea textarea::placeholder,
-        .stMultiSelect > div > div > div,
-        .stSelectbox > div > div > div {
-            color: #888 !important;
-        }
-        /* Remove box/border from slider container */
-        .stSlider > div {
-            background: none !important;
-            border: none !important;
-            box-shadow: none !important;
-        }
-        /* Prevent caret/cursor and focus on headings and labels */
-        .main-header, .sub-header, label, .metric-label, .company-name, .company-detail, .stMarkdown, .stText, h1, h2, h3, h4, h5, h6, .st-expanderHeader, b, strong {
-            user-select: none !important;
-            caret-color: transparent !important;
-        }
-        .st-expanderHeader, .st-expanderHeader * {
-            user-select: none !important;
-            caret-color: transparent !important;
-            outline: none !important;
-        }
-        .st-expanderHeader:focus, .st-expanderHeader *:focus {
-            outline: none !important;
-            caret-color: transparent !important;
-        }
-        /* Aggressively hide Streamlit's input helper text (e.g., 'Press Enter to apply') but keep the eye icon */
-        .stTextInput [data-testid="stTextInputHelperText"],
-        .stTextInput div[style*="absolute"]:not(:has(svg)) {
-            display: none !important;
+        /* Adjusting the background of even cards for better visibility */
+        .company-card:nth-child(even) {
+            background-color: #252525;
         }
     </style>
     """, unsafe_allow_html=True)
@@ -372,108 +337,177 @@ def main():
         
         df = pd.DataFrame(df_data)
         
-        # Display all three tabs
-        tab1, tab2, tab3 = st.tabs(["📊 Analytics", "📋 Startup List", "👥 Company Profiles"])
+        # Update tab layout
+        tab1, tab2, tab3, tab4 = st.tabs(["📊 Analytics", "📋 Startup List", "🏢 Company Profiles", "📄 Raw Data"])
         
         with tab1:
             st.markdown("<div class='sub-header'>Funding Analytics</div>", unsafe_allow_html=True)
             
+            # Display metrics
+            col1, col2, col3, col4 = st.columns(4)
+            
+            with col1:
+                st.metric("Total Startups", len(display_data))
+            
+            with col2:
+                funded_count = len([s for s in display_data if s.get("funding_amount")])
+                st.metric("With Funding Info", funded_count)
+            
+            with col3:
+                industries = [s.get("industry") for s in display_data if s.get("industry")]
+                unique_industries = len(set(industries)) if industries else 0
+                st.metric("Industries", unique_industries)
+            
+            with col4:
+                locations = [s.get("location") for s in display_data if s.get("location")]
+                unique_locations = len(set(locations)) if locations else 0
+                st.metric("Locations", unique_locations)
+            
+            # Charts
             col1, col2 = st.columns(2)
             
             with col1:
-                # Industry distribution
-                if 'Industry' in df.columns:
-                    industry_counts = df['Industry'].value_counts()
-                    st.subheader("Top Industries")
+                if industries:
+                    st.subheader("Industry Distribution")
+                    industry_counts = pd.Series(industries).value_counts()
                     st.bar_chart(industry_counts)
+                
+                if locations:
+                    st.subheader("Top Locations")
+                    location_counts = pd.Series(locations).value_counts().head(10)
+                    st.bar_chart(location_counts)
             
             with col2:
-                # Funding rounds distribution
-                if 'Round' in df.columns:
-                    round_counts = df['Round'].value_counts()
+                rounds = [s.get("funding_round") for s in display_data if s.get("funding_round")]
+                if rounds:
                     st.subheader("Funding Rounds")
-                    st.bar_chart(round_counts)
+                    round_counts = pd.Series(rounds).value_counts()
+                    fig = px.pie(values=round_counts.values, names=round_counts.index)
+                    st.plotly_chart(fig, use_container_width=True)
         
         with tab2:
-            # Add search and filter options
+            # Simple list view of startups
+            st.markdown("<div class='sub-header'>Startup List</div>", unsafe_allow_html=True)
+            
+            # Search box
             search = st.text_input("🔍 Search startups by name, industry, or location")
             
-            filtered_df = df
-            if search:
-                search = search.lower()
-                filtered_df = df[
-                    df['Company'].str.lower().str.contains(search, na=False) |
-                    df['Industry'].str.lower().str.contains(search, na=False) |
-                    df['Location'].str.lower().str.contains(search, na=False)
-                ]
-            
-            st.markdown("<div class='sub-header'>Startup List</div>", unsafe_allow_html=True)
-            st.info(f"Showing {len(filtered_df)} startups")
-            
-            # Display startups in cards
-            for _, row in filtered_df.iterrows():
+            # Display startups in a compact list
+            for startup in display_data:
                 with st.container():
-                    st.markdown("<div class='company-card'>", unsafe_allow_html=True)
-                    col1, col2 = st.columns([3, 1])
-                    
-                    with col1:
-                        st.markdown(f"<div class='company-name'>{row['Company']}</div>", unsafe_allow_html=True)
-                    with col2:
-                        if row['Funding Amount'] != 'N/A':
-                            st.markdown(f"<div class='company-funding'>{row['Funding Amount']}</div>", unsafe_allow_html=True)
-                    
-                    if row['Description'] != 'N/A':
-                        st.markdown(f"<div class='company-detail'>{row['Description'][:200]}...</div>", unsafe_allow_html=True)
-                    
-                    col1, col2, col3 = st.columns(3)
-                    with col1:
-                        st.markdown(f"<div class='company-detail'><strong>Industry:</strong> {row['Industry']}</div>", unsafe_allow_html=True)
-                    with col2:
-                        st.markdown(f"<div class='company-detail'><strong>Location:</strong> {row['Location']}</div>", unsafe_allow_html=True)
-                    with col3:
-                        st.markdown(f"<div class='company-detail'><strong>Round:</strong> {row['Round']}</div>", unsafe_allow_html=True)
-                    
-                    col1, col2 = st.columns(2)
-                    with col1:
-                        if row['Investors'] != 'N/A':
-                            st.markdown(f"<div class='company-detail'><strong>Investors:</strong> {row['Investors']}</div>", unsafe_allow_html=True)
-                    with col2:
-                        if row['Website'] != 'N/A':
-                            st.markdown(f"<div class='company-detail'><strong>Website:</strong> <a href='{row['Website']}' target='_blank'>Visit</a></div>", unsafe_allow_html=True)
-                    
-                    st.markdown("</div>", unsafe_allow_html=True)
+                    st.markdown(f"""
+                    <div class='company-card'>
+                        <div style='display: flex; justify-content: space-between; align-items: center;'>
+                            <h3 style='margin: 0;'>{startup.get('company_name')}</h3>
+                            <div style='color: #43a047;'>{startup.get('funding_amount', 'N/A')}</div>
+                        </div>
+                        <p>{startup.get('description', 'No description available')[:150]}...</p>
+                        <div style='display: flex; justify-content: space-between; margin-top: 10px;'>
+                            <span><strong>Industry:</strong> {startup.get('industry', 'N/A')}</span>
+                            <span><strong>Round:</strong> {startup.get('funding_round', 'N/A')}</span>
+                            <span><strong>Location:</strong> {startup.get('location', 'N/A')}</span>
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
         
         with tab3:
             st.markdown("<div class='sub-header'>Company Profiles</div>", unsafe_allow_html=True)
             
-            # Add company selector
-            selected_company = st.selectbox("Select a company to view detailed profile", df['Company'].tolist())
-            
-            if selected_company:
-                company_data = df[df['Company'] == selected_company].iloc[0]
-                
-                st.markdown(f"<div class='main-header'>{selected_company}</div>", unsafe_allow_html=True)
-                
-                col1, col2 = st.columns([2, 1])
-                
-                with col1:
-                    st.markdown("### About")
-                    st.write(company_data['Description'])
+            # Detailed company profiles
+            for startup in display_data:
+                with st.expander(f"{startup.get('company_name')} - {startup.get('funding_amount', 'N/A')}"):
+                    # Header section
+                    col1, col2 = st.columns([2, 1])
+                    with col1:
+                        st.markdown(f"### {startup.get('company_name')}")
+                        if startup.get('company_website'):
+                            st.markdown(f"🌐 [Website]({startup.get('company_website')})")
+                    with col2:
+                        st.markdown(f"<div style='text-align: right;'><h3 style='color: #43a047;'>{startup.get('funding_amount', 'N/A')}</h3></div>", unsafe_allow_html=True)
                     
-                    st.markdown("### Funding Details")
-                    st.write(f"**Amount:** {company_data['Funding Amount']}")
-                    st.write(f"**Round:** {company_data['Round']}")
-                    if company_data['Investors'] != 'N/A':
-                        st.write(f"**Investors:** {company_data['Investors']}")
-                
-                with col2:
-                    st.markdown("### Company Information")
-                    st.write(f"**Industry:** {company_data['Industry']}")
-                    st.write(f"**Location:** {company_data['Location']}")
-                    if company_data['Website'] != 'N/A':
-                        st.write(f"**Website:** [{company_data['Website']}]({company_data['Website']})")
+                    # Company Overview
+                    st.markdown("#### 📝 Company Overview")
+                    st.write(startup.get('description', 'No description available'))
+                    
+                    # Quick Info Grid
+                    col1, col2, col3 = st.columns(3)
+                    with col1:
+                        st.markdown("#### 🏢 Company Details")
+                        st.write(f"**Industry:** {startup.get('industry', 'N/A')}")
+                        st.write(f"**Location:** {startup.get('location', 'N/A')}")
+                        st.write(f"**Size:** {startup.get('company_size', 'N/A')}")
+                    
+                    with col2:
+                        st.markdown("#### 💰 Funding Details")
+                        st.write(f"**Round:** {startup.get('funding_round', 'N/A')}")
+                        st.write(f"**Date:** {startup.get('funding_date', 'N/A')}")
+                        st.write(f"**Total Raised:** {startup.get('total_funding_raised_to_date', 'N/A')}")
+                    
+                    with col3:
+                        st.markdown("#### 🔗 Links & Contact")
+                        if startup.get('linkedin_page'):
+                            st.markdown(f"[Company LinkedIn]({startup.get('linkedin_page')})")
+                        if startup.get('email'):
+                            st.markdown(f"📧 {startup.get('email')}")
+                    
+                    # Investors and Team
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        if startup.get('investors'):
+                            st.markdown("#### 🤝 Investors")
+                            for investor in startup.get('investors'):
+                                st.markdown(f"• {investor}")
+                    
+                    with col2:
+                        if startup.get('recruitment_linkedin_profiles'):
+                            st.markdown("#### 👥 Recruitment Team")
+                            for profile in startup.get('recruitment_linkedin_profiles'):
+                                st.markdown(f"• [Team Member]({profile})")
+                    
+                    # Technical Details
+                    if startup.get('technologies_used') or startup.get('key_products_services'):
+                        st.markdown("#### 💻 Technical Stack & Products")
+                        col1, col2 = st.columns(2)
+                        with col1:
+                            if startup.get('technologies_used'):
+                                st.markdown("**Technologies:**")
+                                st.write(", ".join(startup.get('technologies_used')))
+                        with col2:
+                            if startup.get('key_products_services'):
+                                st.markdown("**Products/Services:**")
+                                for product in startup.get('key_products_services'):
+                                    st.markdown(f"• {product}")
+                    
+                    # Social Media Links
+                    if startup.get('social_media_links'):
+                        st.markdown("#### 📱 Social Media")
+                        cols = st.columns(4)
+                        for i, (platform, url) in enumerate(startup.get('social_media_links').items()):
+                            cols[i].markdown(f"[{platform.capitalize()}]({url})")
+        
+        with tab4:
+            # Raw JSON data display
+            st.markdown("<div class='sub-header'>Raw Data</div>", unsafe_allow_html=True)
+            
+            # JSON data download link
+            if st.button("Download JSON Data"):
+                # Prepare data for download
+                json_data = st.session_state.get('current_startups', [])
+                if json_data:
+                    # Convert to JSON string
+                    json_str = json.dumps({"startups": json_data}, indent=4)
+                    
+                    # Write to a temporary file
+                    with open("startup_funding_data.json", "w", encoding='utf-8') as f:
+                        f.write(json_str)
+                    
+                    # Provide download link
+                    st.markdown("[Download startup_funding_data.json](./startup_funding_data.json)")
+                else:
+                    st.warning("No data available to download.")
+    
     else:
-        st.info("No startups found. Use the sidebar to collect data.")
+        st.info("No startup data available. Click 'Search New Startups' to begin.")
 
-    # footer
-    st.markdown("<div class='footer'>Venture-Watch - Find your next opportunity</div>", unsafe_allow_html=True)
+if __name__ == "__main__":
+    main()
