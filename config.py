@@ -1,4 +1,4 @@
-"""Configuration settings for the application."""
+"""Configuration settings for Venture-Watch."""
 import os
 from dotenv import load_dotenv
 
@@ -6,6 +6,4 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # API Keys
-PERPLEXITY_API_KEY = os.getenv('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', '')
-
-# Other configuration settings can be added here
+PERPLEXITY_API_KEY = os.getenv('PERPLEXITY_API_KEY', '')

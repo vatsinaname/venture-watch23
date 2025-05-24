@@ -1,5 +1,5 @@
 """
-Main Streamlit dashboard application for Startup Finder.
+Main Streamlit dashboard application.
 """
 import os
 import streamlit as st
@@ -8,12 +8,19 @@ import plotly.express as px
 import plotly.graph_objects as go
 from datetime import datetime, timedelta
 import json
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # import local modules
 from src.data_storage.database import DatabaseManager
 from src.data_collection.orchestrator import DataCollectionOrchestrator
 from src.data_collection.perplexity_collector import PerplexityCollector
 from src.data_collection.web_scraping_collector import WebScrapingCollector
+
+# Get API key from environment
+PERPLEXITY_API_KEY = os.getenv('PERPLEXITY_API_KEY', '')
 
 def main():
     # set page config
@@ -331,8 +338,8 @@ def main():
         
         # Create DataFrame for display
         df_data = []
+        # Normalize data for DataFrame
         for startup in display_data:
-            # Normalize the data structure
             company_data = {
                 "Company": startup.get('name') or startup.get('company_name', 'N/A'),
                 "Industry": startup.get('industry', 'N/A'),
@@ -342,7 +349,10 @@ def main():
                 "Description": startup.get('description', 'N/A'),
                 "Funding Date": startup.get('funding_date'),
                 "Website": startup.get('company_website') or startup.get('company_url', 'N/A'),
-                "Investors": ", ".join(startup.get('investors', [])[:2]) + ("..." if len(startup.get('investors', [])) > 2 else "")
+                "Investors": ", ".join(startup.get('investors', [])[:2]) + ("..." if len(startup.get('investors', [])) > 2 else ""),
+                "Recruitment Contacts": ", ".join([f"{c.get('name')} ({c.get('position')})" 
+                                                for c in startup.get('recruitment_contacts', [])
+                                                if isinstance(c, dict) and c.get('name')])
             }
             df_data.append(company_data)
         
@@ -602,32 +612,50 @@ def main():
                             cols[i].markdown(f"[{platform.capitalize()}]({url})")
         
         with tab5:
-            # Raw JSON data display
+            # Raw Data display
             st.markdown("<div class='sub-header'>Raw Data</div>", unsafe_allow_html=True)
             
-            # Show raw data
-            st.json(display_data)
+            # Format data for display
+            json_display_data = []
+            for startup in display_data:
+                formatted_startup = startup.copy()
+                
+                # Special handling for recruitment contacts
+                if 'recruitment_contacts' in formatted_startup:
+                    if isinstance(formatted_startup['recruitment_contacts'], list):
+                        formatted_startup['recruitment_contacts'] = [
+                            {
+                                'name': contact.get('name', ''),
+                                'position': contact.get('position', ''),
+                                'linkedin': contact.get('linkedin', '')
+                            }
+                            for contact in formatted_startup['recruitment_contacts']
+                            if isinstance(contact, dict)
+                        ]
+                
+                # Format standard fields
+                formatted_startup = {
+                    k: v for k, v in formatted_startup.items()
+                    if v is not None and (not isinstance(v, list) or len(v) > 0)
+                }
+                
+                # Add source if missing
+                if 'source' not in formatted_startup:
+                    formatted_startup['source'] = "Perplexity Sonar API"
+                
+                json_display_data.append(formatted_startup)
             
-            # Download functionality
+            # Show formatted JSON data
+            st.json(json_display_data)
+            
+            # Download button
             if st.download_button(
                 label="📥 Download JSON Data",
-                data=json.dumps(display_data, indent=2),
+                data=json.dumps({"startups": json_display_data}, indent=2),
                 file_name="startup_funding_data.json",
                 mime="application/json"
             ):
                 st.success("✅ Download started!")
-
-    # Update API key handling in the sidebar
-    with st.sidebar:
-        with st.expander("Collect New Data"):
-            # Try to get API key from config first
-            api_key = PERPLEXITY_API_KEY
-            if not api_key:
-                api_key = st.text_input("Perplexity API Key", type="password")
-            else:
-                st.success("✅ API Key loaded from configuration")
-                if st.checkbox("Override API Key"):
-                    api_key = st.text_input("New API Key", type="password")
 
 if __name__ == "__main__":
     main()
