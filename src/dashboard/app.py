@@ -133,6 +133,17 @@ def main():
 
     # sidebar
     with st.sidebar:
+        st.markdown("<div class='sub-header'>Controls</div>", unsafe_allow_html=True)
+        
+        # reset button
+        if st.button("🔄 Reset Data"):
+            st.session_state['current_startups'] = []
+            st.session_state['show_cached'] = False
+            if os.path.exists("startup_funding_data.json"):
+                os.remove("startup_funding_data.json")
+            st.success("Data reset successful! Click 'Search New Startups' to collect fresh data.")
+            st.experimental_rerun()
+
         st.markdown("<div class='sub-header'>Filters</div>", unsafe_allow_html=True)
         
         # time range filter
@@ -337,8 +348,8 @@ def main():
         
         df = pd.DataFrame(df_data)
         
-        # Update tab layout
-        tab1, tab2, tab3, tab4 = st.tabs(["📊 Analytics", "📋 Startup List", "🏢 Company Profiles", "📄 Raw Data"])
+        # Update tab layout with new Analytics tabs
+        tab1, tab2, tab3, tab4, tab5 = st.tabs(["📊 Overview", "📈 Funding Analysis", "🔍 Deep Insights", "🏢 Company Profiles", "📄 Raw Data"])
         
         with tab1:
             st.markdown("<div class='sub-header'>Funding Analytics</div>", unsafe_allow_html=True)
@@ -386,31 +397,136 @@ def main():
                     st.plotly_chart(fig, use_container_width=True)
         
         with tab2:
-            # Simple list view of startups
-            st.markdown("<div class='sub-header'>Startup List</div>", unsafe_allow_html=True)
+            st.markdown("<div class='sub-header'>Funding Analysis</div>", unsafe_allow_html=True)
             
-            # Search box
-            search = st.text_input("🔍 Search startups by name, industry, or location")
-            
-            # Display startups in a compact list
-            for startup in display_data:
-                with st.container():
-                    st.markdown(f"""
-                    <div class='company-card'>
-                        <div style='display: flex; justify-content: space-between; align-items: center;'>
-                            <h3 style='margin: 0;'>{startup.get('company_name')}</h3>
-                            <div style='color: #43a047;'>{startup.get('funding_amount', 'N/A')}</div>
-                        </div>
-                        <p>{startup.get('description', 'No description available')[:150]}...</p>
-                        <div style='display: flex; justify-content: space-between; margin-top: 10px;'>
-                            <span><strong>Industry:</strong> {startup.get('industry', 'N/A')}</span>
-                            <span><strong>Round:</strong> {startup.get('funding_round', 'N/A')}</span>
-                            <span><strong>Location:</strong> {startup.get('location', 'N/A')}</span>
-                        </div>
-                    </div>
-                    """, unsafe_allow_html=True)
-        
+            # Funding amount distribution
+            if display_data:
+                col1, col2 = st.columns(2)
+                
+                with col1:
+                    # Funding amount by round
+                    funding_data = []
+                    for startup in display_data:
+                        amount = startup.get('funding_amount', '0')
+                        # Convert amount to numeric, handling different formats
+                        try:
+                            amount = float(''.join(filter(str.isdigit, amount)))
+                            round_type = startup.get('funding_round', 'Unknown')
+                            funding_data.append({'Round': round_type, 'Amount': amount})
+                        except ValueError:
+                            continue
+                    
+                    if funding_data:
+                        df_funding = pd.DataFrame(funding_data)
+                        fig = px.box(df_funding, x='Round', y='Amount',
+                                   title='Funding Amount Distribution by Round',
+                                   template='plotly_dark')
+                        st.plotly_chart(fig, use_container_width=True)
+                
+                with col2:
+                    # Funding timeline
+                    timeline_data = []
+                    for startup in display_data:
+                        if startup.get('funding_date'):
+                            try:
+                                date = pd.to_datetime(startup.get('funding_date'))
+                                amount = float(''.join(filter(str.isdigit, startup.get('funding_amount', '0'))))
+                                timeline_data.append({'Date': date, 'Amount': amount})
+                            except:
+                                continue
+                    
+                    if timeline_data:
+                        df_timeline = pd.DataFrame(timeline_data)
+                        fig = px.line(df_timeline.sort_values('Date'), 
+                                    x='Date', y='Amount',
+                                    title='Funding Amount Timeline',
+                                    template='plotly_dark')
+                        st.plotly_chart(fig, use_container_width=True)
+
         with tab3:
+            st.markdown("<div class='sub-header'>Deep Insights</div>", unsafe_allow_html=True)
+            
+            if display_data:
+                col1, col2 = st.columns(2)
+                
+                with col1:
+                    # Industry-Location Heatmap
+                    industry_location = []
+                    for startup in display_data:
+                        industry = startup.get('industry', 'Unknown')
+                        location = startup.get('location', 'Unknown')
+                        industry_location.append({'Industry': industry, 'Location': location})
+                    
+                    df_heatmap = pd.DataFrame(industry_location)
+                    heatmap_data = pd.crosstab(df_heatmap['Industry'], df_heatmap['Location'])
+                    
+                    fig = px.imshow(heatmap_data,
+                                   title='Industry-Location Distribution',
+                                   template='plotly_dark',
+                                   color_continuous_scale='Viridis')
+                    st.plotly_chart(fig, use_container_width=True)
+                
+                with col2:
+                    # Technology stack analysis
+                    tech_stack = []
+                    for startup in display_data:
+                        techs = startup.get('technologies_used', [])
+                        if isinstance(techs, list):
+                            tech_stack.extend(techs)
+                    
+                    if tech_stack:
+                        tech_counts = pd.Series(tech_stack).value_counts()
+                        fig = px.treemap(names=tech_counts.index,
+                                       parents=['Technology']*len(tech_counts),
+                                       values=tech_counts.values,
+                                       title='Technology Stack Distribution',
+                                       template='plotly_dark')
+                        st.plotly_chart(fig, use_container_width=True)
+                
+                # Additional metrics
+                col1, col2, col3 = st.columns(3)
+                
+                with col1:
+                    # Average funding by industry
+                    industry_funding = []
+                    for startup in display_data:
+                        try:
+                            amount = float(''.join(filter(str.isdigit, startup.get('funding_amount', '0'))))
+                            industry = startup.get('industry', 'Unknown')
+                            industry_funding.append({'Industry': industry, 'Amount': amount})
+                        except:
+                            continue
+                    
+                    if industry_funding:
+                        df_industry = pd.DataFrame(industry_funding)
+                        avg_by_industry = df_industry.groupby('Industry')['Amount'].mean().sort_values(ascending=False)
+                        fig = px.bar(x=avg_by_industry.index, y=avg_by_industry.values,
+                                    title='Average Funding by Industry',
+                                    template='plotly_dark')
+                        st.plotly_chart(fig, use_container_width=True)
+                
+                with col2:
+                    # Funding success rate by location
+                    location_counts = pd.Series([s.get('location', 'Unknown') for s in display_data]).value_counts()
+                    funded_locations = pd.Series([s.get('location', 'Unknown') for s in display_data if s.get('funding_amount')]).value_counts()
+                    success_rate = (funded_locations / location_counts * 100).sort_values(ascending=True)
+                    
+                    fig = px.bar(x=success_rate.values, y=success_rate.index,
+                                title='Funding Success Rate by Location (%)',
+                                orientation='h',
+                                template='plotly_dark')
+                    st.plotly_chart(fig, use_container_width=True)
+                
+                with col3:
+                    # Company size distribution
+                    size_dist = pd.Series([s.get('company_size', 'Unknown') for s in display_data]).value_counts()
+                    fig = px.pie(values=size_dist.values,
+                               names=size_dist.index,
+                               title='Company Size Distribution',
+                               template='plotly_dark')
+                    st.plotly_chart(fig, use_container_width=True)
+        
+        with tab4:
             st.markdown("<div class='sub-header'>Company Profiles</div>", unsafe_allow_html=True)
             
             # Detailed company profiles
@@ -485,29 +601,33 @@ def main():
                         for i, (platform, url) in enumerate(startup.get('social_media_links').items()):
                             cols[i].markdown(f"[{platform.capitalize()}]({url})")
         
-        with tab4:
+        with tab5:
             # Raw JSON data display
             st.markdown("<div class='sub-header'>Raw Data</div>", unsafe_allow_html=True)
             
-            # JSON data download link
-            if st.button("Download JSON Data"):
-                # Prepare data for download
-                json_data = st.session_state.get('current_startups', [])
-                if json_data:
-                    # Convert to JSON string
-                    json_str = json.dumps({"startups": json_data}, indent=4)
-                    
-                    # Write to a temporary file
-                    with open("startup_funding_data.json", "w", encoding='utf-8') as f:
-                        f.write(json_str)
-                    
-                    # Provide download link
-                    st.markdown("[Download startup_funding_data.json](./startup_funding_data.json)")
-                else:
-                    st.warning("No data available to download.")
-    
-    else:
-        st.info("No startup data available. Click 'Search New Startups' to begin.")
+            # Show raw data
+            st.json(display_data)
+            
+            # Download functionality
+            if st.download_button(
+                label="📥 Download JSON Data",
+                data=json.dumps(display_data, indent=2),
+                file_name="startup_funding_data.json",
+                mime="application/json"
+            ):
+                st.success("✅ Download started!")
+
+    # Update API key handling in the sidebar
+    with st.sidebar:
+        with st.expander("Collect New Data"):
+            # Try to get API key from config first
+            api_key = PERPLEXITY_API_KEY
+            if not api_key:
+                api_key = st.text_input("Perplexity API Key", type="password")
+            else:
+                st.success("✅ API Key loaded from configuration")
+                if st.checkbox("Override API Key"):
+                    api_key = st.text_input("New API Key", type="password")
 
 if __name__ == "__main__":
     main()

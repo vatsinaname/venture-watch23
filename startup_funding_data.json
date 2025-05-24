@@ -1,354 +1,227 @@
 {
-  "timestamp": "2025-05-24T17:38:12.114644",
-  "count": 12,
-  "startups": [
-    {
-      "company_name": "QuEra Computing",
-      "description": "Boston-based QuEra Computing is a neutral-atoms-based quantum computing startup.",
-      "funding_amount": "$230.0M",
-      "funding_round": "Venture",
-      "funding_date": "February 2025",
-      "investors": [
-        "Alphabet",
-        "Google",
-        "QVT Financial",
-        "Safar Partners",
-        "SoftBank Vision Fund",
-        "Valor Equity Partners"
-      ],
-      "industry": "Quantum Computing",
-      "location": "Boston, USA",
-      "company_size": null,
-      "company_website": null,
-      "founding_date": "2018",
-      "total_funding": "$17.0M",
-      "linkedin_page": null,
-      "email": null,
-      "recruitment_linkedin_employees": null,
-      "technologies_used": [
-        "Neutral atom quantum computing"
-      ],
-      "key_products_services": [
-        "Quantum computing hardware"
-      ],
-      "social_links": null,
-      "other_relevant_information": null,
-      "source": ""
-    },
-    {
-      "company_name": "Abridge",
-      "description": "Abridge is an AI-driven platform that transforms patient-clinician conversations into structured clinical notes for healthcare industries.",
-      "funding_amount": "$250.0M",
-      "funding_round": "Series D",
-      "funding_date": "February 17, 2025",
-      "investors": [
-        "IVP",
-        "Elad Gil",
-        "Lightspeed",
-        "Redpoint",
-        "Spark Capital",
-        "Union Square Ventures",
-        "Bessemer Venture Partners",
-        "KdT Ventures"
-      ],
-      "industry": "Healthtech, AI",
-      "location": "Pittsburgh, USA",
-      "company_size": null,
-      "company_website": null,
-      "founding_date": "2018",
-      "total_funding": "$457.5M",
-      "linkedin_page": null,
-      "email": null,
-      "recruitment_linkedin_employees": null,
-      "technologies_used": [
-        "AI",
-        "NLP"
-      ],
-      "key_products_services": [
-        "Clinical note automation"
-      ],
-      "social_links": null,
-      "other_relevant_information": null,
-      "source": ""
-    },
-    {
-      "company_name": "Nomagic",
-      "description": "Nomagic provides AI-powered robotic picking solutions for warehouses and logistics.",
-      "funding_amount": "€42M",
-      "funding_round": "Series B",
-      "funding_date": "February 2025",
-      "investors": [],
-      "industry": "AI, Robotics, Logistics",
-      "location": "CEE (Central and Eastern Europe)",
-      "company_size": null,
-      "company_website": null,
-      "founding_date": null,
-      "total_funding": null,
-      "linkedin_page": null,
-      "email": null,
-      "recruitment_linkedin_employees": null,
-      "technologies_used": [
-        "AI",
-        "Robotics"
-      ],
-      "key_products_services": [
-        "Robotic picking solutions"
-      ],
-      "social_links": null,
-      "other_relevant_information": null,
-      "source": ""
-    },
-    {
-      "company_name": "Atrandi Biosciences",
-      "description": "Atrandi Biosciences develops microfluidic technologies for single-cell analysis and genomics.",
-      "funding_amount": "€24M",
-      "funding_round": "Series A",
-      "funding_date": "February 2025",
-      "investors": [],
-      "industry": "Biotech, Healthtech",
-      "location": "CEE (Central and Eastern Europe)",
-      "company_size": null,
-      "company_website": null,
-      "founding_date": null,
-      "total_funding": null,
-      "linkedin_page": null,
-      "email": null,
-      "recruitment_linkedin_employees": null,
-      "technologies_used": [
-        "Microfluidics"
-      ],
-      "key_products_services": [
-        "Single-cell analysis platforms"
-      ],
-      "social_links": null,
-      "other_relevant_information": null,
-      "source": ""
-    },
-    {
-      "company_name": "Bible Chat",
-      "description": "Bible Chat is a conversational AI platform for religious and spiritual engagement.",
-      "funding_amount": "€13.4M",
-      "funding_round": "Series A",
-      "funding_date": "February 2025",
-      "investors": [],
-      "industry": "AI, SaaS",
-      "location": "CEE (Central and Eastern Europe)",
-      "company_size": null,
-      "company_website": null,
-      "founding_date": null,
-      "total_funding": null,
-      "linkedin_page": null,
-      "email": null,
-      "recruitment_linkedin_employees": null,
-      "technologies_used": [
-        "Conversational AI"
-      ],
-      "key_products_services": [
-        "AI chatbot for religious engagement"
-      ],
-      "social_links": null,
-      "other_relevant_information": null,
-      "source": ""
-    },
-    {
-      "company_name": "Together AI",
-      "description": "Together AI creates open source generative AI and AI model development infrastructure.",
-      "funding_amount": "$305M",
-      "funding_round": "Series B",
-      "funding_date": "February 20, 2025",
-      "investors": [
-        "Prosperity7",
-        "General Catalyst",
-        "Salesforce Ventures",
-        "Nvidia",
-        "Lux Capital"
-      ],
-      "industry": "AI, Infrastructure",
-      "location": "USA",
-      "company_size": null,
-      "company_website": null,
-      "founding_date": null,
-      "total_funding": null,
-      "linkedin_page": null,
-      "email": null,
-      "recruitment_linkedin_employees": null,
-      "technologies_used": [
-        "Generative AI",
-        "AI infrastructure"
-      ],
-      "key_products_services": [
-        "AI model development tools"
-      ],
-      "social_links": null,
-      "other_relevant_information": null,
-      "source": ""
-    },
-    {
-      "company_name": "Lambda",
-      "description": "Lambda is an AI infrastructure company providing GPU cloud and hardware solutions for AI development.",
-      "funding_amount": "$480M",
-      "funding_round": "Series D",
-      "funding_date": "February 19, 2025",
-      "investors": [
-        "SGW",
-        "Andra Capital",
-        "Nvidia",
-        "G Squared",
-        "ARK Invest"
-      ],
-      "industry": "AI, Infrastructure",
-      "location": "USA",
-      "company_size": null,
-      "company_website": null,
-      "founding_date": null,
-      "total_funding": null,
-      "linkedin_page": null,
-      "email": null,
-      "recruitment_linkedin_employees": null,
-      "technologies_used": [
-        "GPU cloud",
-        "AI infrastructure"
-      ],
-      "key_products_services": [
-        "GPU cloud services",
-        "AI hardware"
-      ],
-      "social_links": null,
-      "other_relevant_information": null,
-      "source": ""
-    },
-    {
-      "company_name": "World",
-      "description": "World is a crypto-backed digital identity platform expanding its digital ID mission.",
-      "funding_amount": "$135M",
-      "funding_round": null,
-      "funding_date": "May 22, 2025",
-      "investors": [],
-      "industry": "Fintech, Crypto, Identity",
-      "location": null,
-      "company_size": null,
-      "company_website": null,
-      "founding_date": null,
-      "total_funding": null,
-      "linkedin_page": null,
-      "email": null,
-      "recruitment_linkedin_employees": null,
-      "technologies_used": [
-        "Blockchain",
-        "Digital identity"
-      ],
-      "key_products_services": [
-        "Digital ID platform"
-      ],
-      "social_links": null,
-      "other_relevant_information": null,
-      "source": ""
-    },
-    {
-      "company_name": "Siro",
-      "description": "Siro brings AI to face-to-face sales, enhancing sales processes with artificial intelligence.",
-      "funding_amount": "$50M",
-      "funding_round": "Series B",
-      "funding_date": "May 22, 2025",
-      "investors": [],
-      "industry": "AI, SaaS, Sales",
-      "location": null,
-      "company_size": null,
-      "company_website": null,
-      "founding_date": null,
-      "total_funding": null,
-      "linkedin_page": null,
-      "email": null,
-      "recruitment_linkedin_employees": null,
-      "technologies_used": [
-        "AI"
-      ],
-      "key_products_services": [
-        "AI-powered sales tools"
-      ],
-      "social_links": null,
-      "other_relevant_information": null,
-      "source": ""
-    },
-    {
-      "company_name": "RevenueCat",
-      "description": "RevenueCat provides in-app monetization infrastructure for thousands of apps.",
-      "funding_amount": "$50M",
-      "funding_round": "Series C",
-      "funding_date": "May 22, 2025",
-      "investors": [],
-      "industry": "SaaS, Fintech",
-      "location": null,
-      "company_size": null,
-      "company_website": null,
-      "founding_date": null,
-      "total_funding": null,
-      "linkedin_page": null,
-      "email": null,
-      "recruitment_linkedin_employees": null,
-      "technologies_used": [
-        "SaaS",
-        "Payments"
-      ],
-      "key_products_services": [
-        "In-app monetization platform"
-      ],
-      "social_links": null,
-      "other_relevant_information": null,
-      "source": ""
-    },
-    {
-      "company_name": "David AI",
-      "description": "David AI advances audio data infrastructure with AI-driven solutions.",
-      "funding_amount": "$25M",
-      "funding_round": null,
-      "funding_date": "May 22, 2025",
-      "investors": [],
-      "industry": "AI, Audio, Infrastructure",
-      "location": null,
-      "company_size": null,
-      "company_website": null,
-      "founding_date": null,
-      "total_funding": null,
-      "linkedin_page": null,
-      "email": null,
-      "recruitment_linkedin_employees": null,
-      "technologies_used": [
-        "AI",
-        "Audio data"
-      ],
-      "key_products_services": [
-        "Audio data infrastructure"
-      ],
-      "social_links": null,
-      "other_relevant_information": null,
-      "source": ""
-    },
-    {
-      "company_name": "Fore Bio",
-      "description": "Fore Bio is developing advanced cancer treatment solutions.",
-      "funding_amount": "$38M",
-      "funding_round": null,
-      "funding_date": "May 22, 2025",
-      "investors": [],
-      "industry": "Healthtech, Biotech",
-      "location": null,
-      "company_size": null,
-      "company_website": null,
-      "founding_date": null,
-      "total_funding": null,
-      "linkedin_page": null,
-      "email": null,
-      "recruitment_linkedin_employees": null,
-      "technologies_used": [
-        "Biotech"
-      ],
-      "key_products_services": [
-        "Cancer treatment solutions"
-      ],
-      "social_links": null,
-      "other_relevant_information": null,
-      "source": ""
-    }
-  ]
+    "startups": [
+        {
+            "company_name": "QuEra Computing",
+            "description": "Boston-based QuEra Computing is a neutral-atoms-based quantum computing startup.",
+            "funding_amount": "$230.0M",
+            "funding_round": "Venture",
+            "funding_date": "February 2025",
+            "investors": [
+                "Alphabet",
+                "Google",
+                "QVT Financial",
+                "Safar Partners",
+                "SoftBank Vision Fund",
+                "Valor Equity Partners"
+            ],
+            "industry": "Quantum Computing",
+            "location": "Boston, USA",
+            "company_size": null,
+            "company_website": null,
+            "founding_date": "2018",
+            "total_funding": "$17.0M",
+            "linkedin_page": null,
+            "email": null,
+            "recruitment_linkedin_employees": null,
+            "technologies_used": [
+                "Neutral atom quantum computing"
+            ],
+            "key_products_services": [
+                "Quantum computing hardware"
+            ],
+            "social_links": null,
+            "other_relevant_information": "Founded by Dirk Englund, John Pena, Markus Greiner, Mikhail Lukin, Nathan Gemelke, and Vladan Vuletic.",
+            "source": "",
+            "name": "QuEra Computing"
+        },
+        {
+            "company_name": "Abridge",
+            "description": "Abridge is an AI-driven platform that transforms patient-clinician conversations into structured clinical notes for healthcare industries.",
+            "funding_amount": "$250.0M",
+            "funding_round": "Series D",
+            "funding_date": "February 17, 2025",
+            "investors": [
+                "IVP",
+                "Elad Gil",
+                "Lightspeed",
+                "Redpoint",
+                "Spark Capital",
+                "Union Square Ventures",
+                "Bessemer Venture Partners",
+                "KdT Ventures"
+            ],
+            "industry": "Healthtech, AI",
+            "location": "Pittsburgh, USA",
+            "company_size": null,
+            "company_website": null,
+            "founding_date": "2018",
+            "total_funding": "$457.5M",
+            "linkedin_page": null,
+            "email": null,
+            "recruitment_linkedin_employees": null,
+            "technologies_used": [
+                "AI",
+                "NLP"
+            ],
+            "key_products_services": [
+                "Clinical documentation automation"
+            ],
+            "social_links": null,
+            "other_relevant_information": "Founded by Florian Metze, Sandeep Konam, and Shivdev Rao.",
+            "source": "",
+            "name": "Abridge"
+        },
+        {
+            "company_name": "Nomagic",
+            "description": "Nomagic provides AI-powered robotic picking solutions for warehouses and logistics.",
+            "funding_amount": "\u20ac42M",
+            "funding_round": "Series B",
+            "funding_date": "February 2025",
+            "investors": [],
+            "industry": "AI, Robotics, Logistics",
+            "location": "CEE (Central and Eastern Europe)",
+            "company_size": null,
+            "company_website": null,
+            "founding_date": null,
+            "total_funding": null,
+            "linkedin_page": null,
+            "email": null,
+            "recruitment_linkedin_employees": null,
+            "technologies_used": [
+                "AI",
+                "Robotics"
+            ],
+            "key_products_services": [
+                "Robotic picking systems"
+            ],
+            "social_links": null,
+            "other_relevant_information": null,
+            "source": "",
+            "name": "Nomagic"
+        },
+        {
+            "company_name": "Atrandi Biosciences",
+            "description": "Atrandi Biosciences develops microfluidic technologies for single-cell analysis and genomics.",
+            "funding_amount": "\u20ac24M",
+            "funding_round": "Series A",
+            "funding_date": "February 2025",
+            "investors": [],
+            "industry": "Biotech, Healthtech",
+            "location": "CEE (Central and Eastern Europe)",
+            "company_size": null,
+            "company_website": null,
+            "founding_date": null,
+            "total_funding": null,
+            "linkedin_page": null,
+            "email": null,
+            "recruitment_linkedin_employees": null,
+            "technologies_used": [
+                "Microfluidics"
+            ],
+            "key_products_services": [
+                "Single-cell analysis platforms"
+            ],
+            "social_links": null,
+            "other_relevant_information": null,
+            "source": "",
+            "name": "Atrandi Biosciences"
+        },
+        {
+            "company_name": "Bible Chat",
+            "description": "Bible Chat is an AI-powered chatbot for religious education and engagement.",
+            "funding_amount": "\u20ac13.4M",
+            "funding_round": "Series A",
+            "funding_date": "February 2025",
+            "investors": [],
+            "industry": "AI, SaaS, Edtech",
+            "location": "CEE (Central and Eastern Europe)",
+            "company_size": null,
+            "company_website": null,
+            "founding_date": null,
+            "total_funding": null,
+            "linkedin_page": null,
+            "email": null,
+            "recruitment_linkedin_employees": null,
+            "technologies_used": [
+                "AI",
+                "Chatbot"
+            ],
+            "key_products_services": [
+                "Religious education chatbot"
+            ],
+            "social_links": null,
+            "other_relevant_information": null,
+            "source": "",
+            "name": "Bible Chat"
+        },
+        {
+            "company_name": "Together AI",
+            "description": "Together AI creates open source generative AI and AI model development infrastructure.",
+            "funding_amount": "$305M",
+            "funding_round": "Series B",
+            "funding_date": "February 20, 2025",
+            "investors": [
+                "Prosperity7",
+                "General Catalyst",
+                "Salesforce Ventures",
+                "Nvidia",
+                "Lux Capital"
+            ],
+            "industry": "AI, SaaS",
+            "location": "USA",
+            "company_size": null,
+            "company_website": null,
+            "founding_date": null,
+            "total_funding": null,
+            "linkedin_page": null,
+            "email": null,
+            "recruitment_linkedin_employees": null,
+            "technologies_used": [
+                "Generative AI",
+                "AI infrastructure"
+            ],
+            "key_products_services": [
+                "AI model development platform"
+            ],
+            "social_links": null,
+            "other_relevant_information": "Valued at $3.3B as of this round.",
+            "source": "",
+            "name": "Together AI"
+        },
+        {
+            "company_name": "Lambda",
+            "description": "Lambda is an AI infrastructure company providing GPU cloud and hardware solutions for AI development.",
+            "funding_amount": "$480M",
+            "funding_round": "Series D",
+            "funding_date": "February 19, 2025",
+            "investors": [
+                "SGW",
+                "Andra Capital",
+                "Nvidia",
+                "G Squared",
+                "ARK Invest"
+            ],
+            "industry": "AI, Cloud Infrastructure",
+            "location": "USA",
+            "company_size": null,
+            "company_website": null,
+            "founding_date": null,
+            "total_funding": null,
+            "linkedin_page": null,
+            "email": null,
+            "recruitment_linkedin_employees": null,
+            "technologies_used": [
+                "GPU cloud",
+                "AI infrastructure"
+            ],
+            "key_products_services": [
+                "GPU cloud services",
+                "AI hardware"
+            ],
+            "social_links": null,
+            "other_relevant_information": "Valued at nearly $2.5B as of this round.",
+            "source": "",
+            "name": "Lambda"
+        }
+    ]
 }
