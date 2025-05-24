@@ -1,4 +1,4 @@
-# Startup Finder Project Todo List
+# Startup Finder Project todo List
 
 ## Project Setup
 - [x] Define project requirements and architecture

@@ -57,7 +57,7 @@ class WebScrapingCollector(DataCollector):
             try:
                 logger.info(f"Scraping source: {source['name']} ({source['url']})")
                 
-                # Determine which scraper to use based on the source
+                # determine which scraper to use based on the source
                 if source['name'].lower() == 'crunchbase':
                     startups = self._scrape_crunchbase(source['url'], date_threshold, use_browser)
                 elif source['name'].lower() == 'techcrunch':
@@ -65,10 +65,10 @@ class WebScrapingCollector(DataCollector):
                 elif source['name'].lower() == 'venturebeat':
                     startups = self._scrape_venturebeat(source['url'], date_threshold, use_browser)
                 else:
-                    # Generic scraper for other sources
+                    # generic scraper for other sources
                     startups = self._scrape_generic(source['url'], source['name'], date_threshold, use_browser)
                 
-                # Add source information to each startup
+                # add source information to each startup
                 for startup in startups:
                     startup.source = source['name']
                     startup.source_url = source['url']
@@ -113,21 +113,20 @@ class WebScrapingCollector(DataCollector):
             
         soup = BeautifulSoup(html_content, 'html.parser')
         
-        # Look for common patterns in funding news articles
-        # This is a simplified approach and would need to be refined for production use
+        # look for common patterns in funding news articles
         
-        # Find article elements
+        # find article elements
         articles = soup.find_all(['article', 'div', 'section'], class_=lambda c: c and any(
             term in str(c).lower() for term in ['article', 'post', 'news', 'funding', 'startup']
         ))
         
         if not articles:
-            # Try to find any div that might contain articles
+            # try to find any div that might contain articles
             articles = soup.find_all('div', class_=lambda c: c and 'container' in str(c).lower())
         
         for article in articles:
             try:
-                # Extract title/company name
+                # extrc title/company name
                 title_elem = article.find(['h1', 'h2', 'h3', 'h4', 'a'], class_=lambda c: c and any(
                     term in str(c).lower() for term in ['title', 'heading', 'headline']
                 ))
@@ -140,12 +139,12 @@ class WebScrapingCollector(DataCollector):
                     
                 title = title_elem.get_text().strip()
                 
-                # Check if this is a funding article
+                # check if this is a funding article
                 funding_keywords = ['raise', 'raised', 'funding', 'investment', 'seed', 'series', 'venture', 'capital']
                 if not any(keyword in title.lower() for keyword in funding_keywords):
                     continue
                 
-                # Extract date
+                # ext date
                 date_elem = article.find(['time', 'span', 'div', 'p'], class_=lambda c: c and any(
                     term in str(c).lower() for term in ['date', 'time', 'published', 'posted']
                 ))
@@ -158,7 +157,7 @@ class WebScrapingCollector(DataCollector):
                 if article_date and article_date < date_threshold:
                     continue
                 
-                # Extract description/content
+                # ext descr/cont
                 content_elem = article.find(['p', 'div'], class_=lambda c: c and any(
                     term in str(c).lower() for term in ['excerpt', 'summary', 'content', 'description']
                 ))
@@ -167,27 +166,27 @@ class WebScrapingCollector(DataCollector):
                 if content_elem:
                     description = content_elem.get_text().strip()
                 
-                # Extract link for more details
+                # ext link for more details
                 link_elem = title_elem if title_elem.name == 'a' else article.find('a')
                 article_url = None
                 if link_elem and link_elem.get('href'):
                     href = link_elem['href']
                     if href.startswith('/'):
-                        # Relative URL
+                        # rel url
                         base_url = '/'.join(url.split('/')[:3])  # http(s)://domain.com
                         article_url = base_url + href
                     elif href.startswith('http'):
-                        # Absolute URL
+                        # abs url
                         article_url = href
                 
-                # Extract company name from title
+                # ext company name from title
                 company_name = self._extract_company_name(title)
                 
-                # Extract funding details from title and description
+                # ext fund dets from title and descr
                 funding_amount = self._extract_funding_amount(title + " " + description)
                 funding_round = self._extract_funding_round(title + " " + description)
                 
-                # Create startup data
+                # create startup data
                 startup = StartupData(
                     name=company_name,
                     description=description,
@@ -223,8 +222,6 @@ class WebScrapingCollector(DataCollector):
         Returns:
             List of StartupData objects
         """
-        # This would be a specialized implementation for Crunchbase
-        # For now, we'll use the generic scraper as a placeholder
         return self._scrape_generic(url, "Crunchbase", date_threshold, use_browser)
     
     def _scrape_techcrunch(
@@ -244,8 +241,6 @@ class WebScrapingCollector(DataCollector):
         Returns:
             List of StartupData objects
         """
-        # This would be a specialized implementation for TechCrunch
-        # For now, we'll use the generic scraper as a placeholder
         return self._scrape_generic(url, "TechCrunch", date_threshold, use_browser)
     
     def _scrape_venturebeat(
@@ -265,8 +260,6 @@ class WebScrapingCollector(DataCollector):
         Returns:
             List of StartupData objects
         """
-        # This would be a specialized implementation for VentureBeat
-        # For now, we'll use the generic scraper as a placeholder
         return self._scrape_generic(url, "VentureBeat", date_threshold, use_browser)
     
     def _get_content_with_requests(self, url: str) -> Optional[str]:
@@ -337,20 +330,20 @@ class WebScrapingCollector(DataCollector):
             Datetime object or None if parsing fails
         """
         try:
-            # Try common date formats
+            # try common date formats
             for fmt in ["%Y-%m-%d", "%B %d, %Y", "%b %d, %Y", "%d %B %Y", "%d %b %Y", "%m/%d/%Y"]:
                 try:
                     return datetime.strptime(date_text, fmt)
                 except ValueError:
                     continue
             
-            # Try relative dates
+            # try relative dates
             if "today" in date_text.lower():
                 return datetime.now()
             elif "yesterday" in date_text.lower():
                 return datetime.now() - timedelta(days=1)
             
-            # Try to extract patterns like "2 days ago", "3 weeks ago", etc.
+            # try to ext patterns liek
             relative_match = re.search(r'(\d+)\s+(day|days|week|weeks|month|months|year|years)\s+ago', date_text, re.IGNORECASE)
             if relative_match:
                 amount = int(relative_match.group(1))
@@ -379,29 +372,23 @@ class WebScrapingCollector(DataCollector):
         Returns:
             Company name
         """
-        # This is a simplified approach and would need refinement
-        
-        # Try to find patterns like "Company X raises $Y"
         match = re.search(r'^([^,]+?)\s+raises', title, re.IGNORECASE)
         if match:
             return match.group(1).strip()
         
-        # Try to find patterns like "Company X secures $Y"
         match = re.search(r'^([^,]+?)\s+secures', title, re.IGNORECASE)
         if match:
             return match.group(1).strip()
         
-        # Try to find patterns like "Company X gets $Y"
         match = re.search(r'^([^,]+?)\s+gets', title, re.IGNORECASE)
         if match:
             return match.group(1).strip()
         
-        # Try to find patterns like "Company X closes $Y"
         match = re.search(r'^([^,]+?)\s+closes', title, re.IGNORECASE)
         if match:
             return match.group(1).strip()
         
-        # If no pattern matches, return the first part of the title
+        # if no pattern matches ret to the first part of the title
         parts = title.split(':')
         if len(parts) > 1:
             return parts[0].strip()
@@ -410,7 +397,7 @@ class WebScrapingCollector(DataCollector):
         if len(parts) > 1:
             return parts[0].strip()
         
-        # Default to first 5 words if nothing else works
+        # def to first 5 words if nothing works
         words = title.split()
         if len(words) > 5:
             return ' '.join(words[:5]).strip()
@@ -427,7 +414,7 @@ class WebScrapingCollector(DataCollector):
         Returns:
             Funding amount as string or None if not found
         """
-        # Look for currency symbols followed by numbers
+        # look for currency symbols followed by numbers
         match = re.search(r'(\$|€|£)(\d+(?:\.\d+)?)\s*(million|m|billion|b|k|thousand)?', text, re.IGNORECASE)
         if match:
             amount = match.group(2)
@@ -442,7 +429,7 @@ class WebScrapingCollector(DataCollector):
             else:
                 return f"{match.group(1)}{amount}"
         
-        # Look for numbers followed by currency words
+        # look for numbers followed by currency words
         match = re.search(r'(\d+(?:\.\d+)?)\s*(million|m|billion|b|k|thousand)?\s*(dollars|euros|pounds)', text, re.IGNORECASE)
         if match:
             amount = match.group(1)
@@ -472,7 +459,7 @@ class WebScrapingCollector(DataCollector):
         Returns:
             Funding round as string or None if not found
         """
-        # Look for common funding round terms
+        # look for common funding round terms
         round_patterns = [
             (r'seed\s+round', 'Seed'),
             (r'seed\s+funding', 'Seed'),

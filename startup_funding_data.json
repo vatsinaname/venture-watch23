@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-05-24T16:37:13.024373",
+  "timestamp": "2025-05-24T17:38:12.114644",
   "count": 12,
   "startups": [
     {
@@ -32,7 +32,7 @@
         "Quantum computing hardware"
       ],
       "social_links": null,
-      "other_relevant_information": "Founded by Dirk Englund, John Pena, Markus Greiner, Mikhail Lukin, Nathan Gemelke, and Vladan Vuletic.",
+      "other_relevant_information": null,
       "source": ""
     },
     {
@@ -44,11 +44,14 @@
       "investors": [
         "IVP",
         "Elad Gil",
-        "Lightspeed Venture Partners",
+        "Lightspeed",
         "Redpoint",
-        "Spark Capital"
+        "Spark Capital",
+        "Union Square Ventures",
+        "Bessemer Venture Partners",
+        "KdT Ventures"
       ],
-      "industry": "Healthtech / AI",
+      "industry": "Healthtech, AI",
       "location": "Pittsburgh, USA",
       "company_size": null,
       "company_website": null,
@@ -59,13 +62,13 @@
       "recruitment_linkedin_employees": null,
       "technologies_used": [
         "AI",
-        "Natural Language Processing"
+        "NLP"
       ],
       "key_products_services": [
         "Clinical note automation"
       ],
       "social_links": null,
-      "other_relevant_information": "Founded by Florian Metze, Sandeep Konam, and Shivdev Rao.",
+      "other_relevant_information": null,
       "source": ""
     },
     {
@@ -75,7 +78,7 @@
       "funding_round": "Series B",
       "funding_date": "February 2025",
       "investors": [],
-      "industry": "AI / Robotics / Logistics",
+      "industry": "AI, Robotics, Logistics",
       "location": "CEE (Central and Eastern Europe)",
       "company_size": null,
       "company_website": null,
@@ -89,7 +92,7 @@
         "Robotics"
       ],
       "key_products_services": [
-        "Warehouse automation robots"
+        "Robotic picking solutions"
       ],
       "social_links": null,
       "other_relevant_information": null,
@@ -97,12 +100,12 @@
     },
     {
       "company_name": "Atrandi Biosciences",
-      "description": "Atrandi Biosciences develops advanced microfluidic and single-cell analysis solutions for life sciences.",
+      "description": "Atrandi Biosciences develops microfluidic technologies for single-cell analysis and genomics.",
       "funding_amount": "€24M",
       "funding_round": "Series A",
       "funding_date": "February 2025",
       "investors": [],
-      "industry": "Healthtech / Biotech",
+      "industry": "Biotech, Healthtech",
       "location": "CEE (Central and Eastern Europe)",
       "company_size": null,
       "company_website": null,
@@ -112,8 +115,7 @@
       "email": null,
       "recruitment_linkedin_employees": null,
       "technologies_used": [
-        "Microfluidics",
-        "Single-cell analysis"
+        "Microfluidics"
       ],
       "key_products_services": [
         "Single-cell analysis platforms"
@@ -124,12 +126,12 @@
     },
     {
       "company_name": "Bible Chat",
-      "description": "Bible Chat is a conversational AI platform focused on religious and spiritual engagement.",
+      "description": "Bible Chat is a conversational AI platform for religious and spiritual engagement.",
       "funding_amount": "€13.4M",
       "funding_round": "Series A",
       "funding_date": "February 2025",
       "investors": [],
-      "industry": "AI / SaaS",
+      "industry": "AI, SaaS",
       "location": "CEE (Central and Eastern Europe)",
       "company_size": null,
       "company_website": null,
@@ -161,7 +163,7 @@
         "Nvidia",
         "Lux Capital"
       ],
-      "industry": "AI / SaaS",
+      "industry": "AI, Infrastructure",
       "location": "USA",
       "company_size": null,
       "company_website": null,
@@ -183,7 +185,7 @@
     },
     {
       "company_name": "Lambda",
-      "description": "Lambda is an AI infrastructure company providing GPU cloud and hardware solutions for AI workloads.",
+      "description": "Lambda is an AI infrastructure company providing GPU cloud and hardware solutions for AI development.",
       "funding_amount": "$480M",
       "funding_round": "Series D",
       "funding_date": "February 19, 2025",
@@ -194,7 +196,7 @@
         "G Squared",
         "ARK Invest"
       ],
-      "industry": "AI / Cloud Infrastructure",
+      "industry": "AI, Infrastructure",
       "location": "USA",
       "company_size": null,
       "company_website": null,
@@ -204,8 +206,8 @@
       "email": null,
       "recruitment_linkedin_employees": null,
       "technologies_used": [
-        "AI infrastructure",
-        "GPU cloud"
+        "GPU cloud",
+        "AI infrastructure"
       ],
       "key_products_services": [
         "GPU cloud services",
@@ -217,12 +219,12 @@
     },
     {
       "company_name": "World",
-      "description": "World is a digital identity platform leveraging crypto technology for secure online identification.",
+      "description": "World is a crypto-backed digital identity platform expanding its digital ID mission.",
       "funding_amount": "$135M",
       "funding_round": null,
       "funding_date": "May 22, 2025",
       "investors": [],
-      "industry": "Fintech / Crypto / Identity",
+      "industry": "Fintech, Crypto, Identity",
       "location": null,
       "company_size": null,
       "company_website": null,
@@ -249,7 +251,7 @@
       "funding_round": "Series B",
       "funding_date": "May 22, 2025",
       "investors": [],
-      "industry": "AI / SaaS / Sales",
+      "industry": "AI, SaaS, Sales",
       "location": null,
       "company_size": null,
       "company_website": null,
@@ -270,12 +272,12 @@
     },
     {
       "company_name": "RevenueCat",
-      "description": "RevenueCat provides in-app monetization infrastructure for mobile apps.",
+      "description": "RevenueCat provides in-app monetization infrastructure for thousands of apps.",
       "funding_amount": "$50M",
       "funding_round": "Series C",
       "funding_date": "May 22, 2025",
       "investors": [],
-      "industry": "SaaS / Fintech",
+      "industry": "SaaS, Fintech",
       "location": null,
       "company_size": null,
       "company_website": null,
@@ -297,12 +299,12 @@
     },
     {
       "company_name": "David AI",
-      "description": "David AI advances audio data infrastructure with AI-powered solutions.",
+      "description": "David AI advances audio data infrastructure with AI-driven solutions.",
       "funding_amount": "$25M",
       "funding_round": null,
       "funding_date": "May 22, 2025",
       "investors": [],
-      "industry": "AI / Audio Data",
+      "industry": "AI, Audio, Infrastructure",
       "location": null,
       "company_size": null,
       "company_website": null,
@@ -324,12 +326,12 @@
     },
     {
       "company_name": "Fore Bio",
-      "description": "Fore Bio is a biotech company focused on advancing cancer treatment.",
+      "description": "Fore Bio is developing advanced cancer treatment solutions.",
       "funding_amount": "$38M",
       "funding_round": null,
       "funding_date": "May 22, 2025",
       "investors": [],
-      "industry": "Healthtech / Biotech",
+      "industry": "Healthtech, Biotech",
       "location": null,
       "company_size": null,
       "company_website": null,

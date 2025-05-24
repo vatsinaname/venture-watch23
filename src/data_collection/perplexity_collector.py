@@ -166,14 +166,14 @@ class PerplexityCollector:
         query = self.build_structured_query(months_back, limit, industries, locations, funding_rounds)
         logger.info(f"Querying for {limit} startups from the last {months_back} months")
         
-        # Try structured approach first
+        # try structured approach first
         response = self.client.query_startups_structured(query)
         startups = []
         
         if response.get("success", False):
             startups = self._parse_structured_response(response["text"])
         
-        # Fallback to traditional parsing if structured fails
+        # fallback to trad pars if structured fail
         if not startups:
             logger.info("Structured parsing failed, trying fallback approach")
             response = self.client.query_startups_fallback(query)
@@ -184,7 +184,7 @@ class PerplexityCollector:
             logger.error("Both parsing methods failed")
             return []
         
-        # Convert to dictionaries for Streamlit display
+        # convert to dict for streamlit disp
         startup_dicts = []
         for startup in startups:
             if isinstance(startup, StartupFundingSchema):
@@ -197,10 +197,10 @@ class PerplexityCollector:
         
         logger.info(f"Successfully collected {len(startup_dicts)} startups")
         
-        # Save data
+        # save data
         self._save_startups(startups)
         
-        # Store in session state
+        # store in session state
         if startup_dicts:
             st.session_state['current_startups'] = startup_dicts
             st.session_state['last_update'] = datetime.now().isoformat()
@@ -248,10 +248,10 @@ class PerplexityCollector:
         try:
             logger.info("Attempting structured JSON parsing")
             
-            # Clean any potential markdown formatting
+            # clean any potential markdown formatting
             content = self._clean_json_content(content)
             
-            # Parse the JSON response
+            # parse the JSON response
             parsed_data = json.loads(content)
             
             if isinstance(parsed_data, dict) and "startups" in parsed_data:
@@ -298,10 +298,10 @@ class PerplexityCollector:
         try:
             logger.info("Attempting fallback JSON parsing")
             
-            # Clean the content
+            # clean the content
             content = self._clean_json_content(content)
             
-            # Try to extract JSON array
+            # try to extract JSON array
             json_match = re.search(r'\[.*?\]', content, re.DOTALL)
             if json_match:
                 json_content = json_match.group(0)
@@ -329,26 +329,26 @@ class PerplexityCollector:
 
     def _clean_json_content(self, content: str) -> str:
         """Clean JSON content from markdown and formatting issues."""
-        # Remove markdown code blocks
+        # remove markdown code blocks
         content = re.sub(r'```[\w]*\n?', '', content)
         content = re.sub(r'```\s*', '', content)
         
-        # Remove citations
+        # remove citations
         content = re.sub(r'\[\d+\]', '', content)
         
-        # Remove currency symbols
+        # remove currency symbols
         content = re.sub(r'₹\s*', '', content)
         
-        # Fix common JSON issues
-        content = re.sub(r',\s*([}\]])', r'\1', content)  # Remove trailing commas
-        content = re.sub(r'"\s*\n\s*"', '" "', content)  # Fix broken strings
+        # fix common JSON issues
+        content = re.sub(r',\s*([}\]])', r'\1', content)  # remove trailing commas
+        content = re.sub(r'"\s*\n\s*"', '" "', content)  # fix broken strings
         
         return content.strip()
 
     def _create_startup_from_dict(self, data: Dict[str, Any]) -> Optional[StartupFundingSchema]:
         """Create a StartupFundingSchema from a dictionary with error handling."""
         try:
-            # Handle recruitment contacts
+            # handle recruitment contacts
             if "recruitment_contacts" in data and isinstance(data["recruitment_contacts"], list):
                 contacts = []
                 for contact in data["recruitment_contacts"]:
@@ -357,11 +357,11 @@ class PerplexityCollector:
                 data["recruitment_linkedin_employees"] = contacts
                 del data["recruitment_contacts"]
             
-            # Ensure required fields
+            # ensure required fields
             data.setdefault("company_name", "Unknown Company")
             data.setdefault("description", "No description available")
             
-            # Clean None and empty values
+            # clean None and empty values
             cleaned_data = {}
             for key, value in data.items():
                 if value is not None and value != "" and value != "Not available":
@@ -404,7 +404,7 @@ class PerplexityCollector:
 def display_startup_card(startup: Dict[str, Any], index: int):
     """Display a detailed startup card."""
     with st.container():
-        # Header with company name and funding
+        # header with company name and funding
         col1, col2 = st.columns([3, 1])
         with col1:
             st.subheader(f"🚀 {startup.get('company_name', 'Unknown Company')}")
@@ -412,12 +412,12 @@ def display_startup_card(startup: Dict[str, Any], index: int):
             if startup.get('funding_amount'):
                 st.metric("Funding", startup['funding_amount'])
         
-        # Description
+        # description
         if startup.get('description'):
             st.write("**Description:**")
             st.write(startup['description'])
         
-        # Key details in columns
+        # key details in columns
         col1, col2, col3 = st.columns(3)
         
         with col1:
@@ -444,24 +444,24 @@ def display_startup_card(startup: Dict[str, Any], index: int):
             if startup.get('email'):
                 st.write(f"**Email:** {startup['email']}")
         
-        # Investors
+        # investors
         if startup.get('investors') and len(startup['investors']) > 0:
             st.write("**Investors:**")
             investor_text = ", ".join(startup['investors'])
             st.write(investor_text)
         
-        # Technologies
+        # tech stack
         if startup.get('technologies_used') and len(startup['technologies_used']) > 0:
             st.write("**Technologies:**")
             tech_tags = " ".join([f"`{tech}`" for tech in startup['technologies_used']])
             st.markdown(tech_tags)
         
-        # Products/Services
+        # prod/services
         if startup.get('key_products_services') and len(startup['key_products_services']) > 0:
             st.write("**Products/Services:**")
             st.write(", ".join(startup['key_products_services']))
         
-        # Recruitment contacts
+        # recruitment cont
         if startup.get('recruitment_linkedin_employees') and len(startup['recruitment_linkedin_employees']) > 0:
             st.write("**Recruitment Contacts:**")
             for contact in startup['recruitment_linkedin_employees']:
@@ -474,14 +474,14 @@ def display_startup_card(startup: Dict[str, Any], index: int):
                     else:
                         st.write(f"- {name} ({position})")
         
-        # Additional information
+        # addln info
         if startup.get('other_relevant_information'):
             st.write("**Additional Information:**")
             st.write(startup['other_relevant_information'])
         
         st.divider()
 
-# Streamlit Dashboard
+# streamlit Dashboard
 def main():
     """Main Streamlit application with improved display."""
     st.set_page_config(
@@ -493,7 +493,7 @@ def main():
     st.title("🚀 Startup Funding Tracker")
     st.markdown("Track recently funded startups using Perplexity Sonar Pro API with structured outputs")
     
-    # Sidebar configuration
+    # sidebar config
     st.sidebar.header("Configuration")
     
     # API Key input
@@ -507,15 +507,15 @@ def main():
         st.warning("Please enter your Perplexity API key in the sidebar to continue.")
         st.stop()
     
-    # Initialize collector
+    # initialize collector
     collector = PerplexityCollector(api_key)
     
-    # Search parameters
+    # search parameters
     st.sidebar.subheader("Search Parameters")
     months_back = st.sidebar.slider("Months to look back", 1, 12, 6)
     target_count = st.sidebar.slider("Number of startups", 5, 30, 15)
     
-    # Filters
+    # filters
     industries = st.sidebar.multiselect(
         "Industries (optional)",
         ["AI/ML", "SaaS", "Fintech", "Healthtech", "E-commerce", "EdTech", "Blockchain", "IoT"]
@@ -531,17 +531,17 @@ def main():
         ["Seed", "Series A", "Series B", "Series C", "Pre-Series A"]
     )
     
-    # Load existing data
+    # load existing data
     existing_startups = collector.load_startups()
     
-    # Display existing data info
+    # display existing data info
     if existing_startups:
         st.sidebar.success(f"Cached: {len(existing_startups)} startups")
         if st.sidebar.button("Show Cached Data"):
             st.session_state['current_startups'] = existing_startups
             st.session_state['show_cached'] = True
     
-    # Search button
+    # search button
     if st.sidebar.button("🔍 Search New Startups", type="primary"):
         with st.spinner("Searching for startups... This may take up to 2 minutes."):
             try:
@@ -563,7 +563,7 @@ def main():
                 st.error(f"Error during search: {str(e)}")
                 logger.error(f"Search error: {e}")
 
-    # Determine what data to display
+    # determine what data to display
     display_data = st.session_state.get('current_startups', [])
     
     if not display_data and existing_startups:
@@ -571,7 +571,7 @@ def main():
         st.info("Showing cached data from previous search")
     
     if display_data:
-        # Display summary metrics
+        # display summary metrics
         col1, col2, col3, col4 = st.columns(4)
         
         with col1:
@@ -589,7 +589,7 @@ def main():
             locations_found = set([s.get("location") for s in display_data if s.get("location")])
             st.metric("Locations", len(locations_found))
         
-        # Display options
+        # display options
         display_mode = st.radio(
             "Display Mode:",
             ["Detailed Cards", "Table View", "Analytics", "Raw JSON"],
@@ -602,7 +602,7 @@ def main():
                 display_startup_card(startup, i)
         
         elif display_mode == "Table View":
-            # Create DataFrame
+            # create DataFrame
             df_data = []
             for startup in display_data:
                 df_data.append({
@@ -622,7 +622,7 @@ def main():
             col1, col2 = st.columns(2)
             
             with col1:
-                # Industry distribution
+                # industry dist
                 industries = [s.get("industry") for s in display_data if s.get("industry")]
                 if industries:
                     industry_counts = pd.Series(industries).value_counts()
@@ -630,14 +630,14 @@ def main():
                     st.bar_chart(industry_counts)
             
             with col2:
-                # Location distribution
+                # location dist
                 locations = [s.get("location") for s in display_data if s.get("location")]
                 if locations:
                     location_counts = pd.Series(locations).value_counts().head(10)
                     st.subheader("Top Locations")
                     st.bar_chart(location_counts)
             
-            # Funding rounds
+            # fund rounds
             rounds = [s.get("funding_round") for s in display_data if s.get("funding_round")]
             if rounds:
                 round_counts = pd.Series(rounds).value_counts()
@@ -648,7 +648,7 @@ def main():
             st.subheader("Raw JSON Data")
             st.json(display_data)
             
-            # Download button
+            # download button
             json_str = json.dumps(display_data, indent=2, default=str)
             st.download_button(
                 label="📥 Download JSON",

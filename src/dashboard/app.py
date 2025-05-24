@@ -219,7 +219,7 @@ def main():
             # collection options
             use_perplexity = st.checkbox("Use Perplexity API", value=True)
             use_web_scraping = st.checkbox("Use Automated Data Collection", value=True)
-            use_browser = st.checkbox("Use Browser for Data Collection (slower but more robust)", value=True)
+            use_browser = st.checkbox("Use Browser for Data Collection (slower)", value=True)
             
             if st.button("Collect Data"):
                 if not use_perplexity and not use_web_scraping:
@@ -253,7 +253,7 @@ def main():
                         # deduplicate
                         startups = orchestrator.deduplicate_startups(startups)
                         
-                        # If using Perplexity, store in session and display directly
+                        # ff using Perplexity, store in session and display directly
                         if use_perplexity:
                             st.session_state['perplexity_startups'] = startups
                             st.success(f"Successfully collected {len(startups)} startups from Perplexity API!")

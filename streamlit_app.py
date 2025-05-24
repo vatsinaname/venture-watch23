@@ -1,5 +1,5 @@
 """
-Streamlit entry for Vercel deploy.
+streamlit entry for Vercel deploy.
 """
 import os
 import sys
